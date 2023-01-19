@@ -15,6 +15,18 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+
+  /* For Constants that are not in a subsystem */
+
+  public static final double
+  public static final double
+
+
+  /* Constants for the drive*/
+
+
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   
