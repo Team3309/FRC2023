@@ -31,7 +31,6 @@ public class JoystickClusterGroup extends Trigger {
         this.side = side;
     }
 
-    @Override
     public boolean get() {
         if (side == Side.left) {
             return stick.getRawButton(LEFT_CLUSTER_1_ID) ||

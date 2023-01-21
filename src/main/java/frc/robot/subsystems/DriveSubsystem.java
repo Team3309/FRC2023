@@ -6,13 +6,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IMU;
 import frc.robot.Vision;
-import frc.robot.swerve.SwerveModule3309;
+import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
 
 import static frc.robot.Constants.Drive.*;
@@ -45,7 +46,17 @@ public class DriveSubsystem extends SubsystemBase {
             BACK_LEFT_MODULE_TRANSLATION,
             BACK_RIGHT_MODULE_TRANSLATION
         );
-        swerveOdometry = new SwerveDriveOdometry(swerveKinematics, IMU.getRobotYaw());
+
+        swerveOdometry = new SwerveDriveOdometry(
+            swerveKinematics,
+            IMU.getRobotYaw(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
+        );
 
         IMU.zeroIMU();
 
@@ -101,10 +112,20 @@ public class DriveSubsystem extends SubsystemBase {
      * Set the odometry readings
      * 
      * @param pose Pose to be written to odometry
+     * @param rotation Rotation to be written to odometry
      */
     public void resetOdometry (Pose2d pose) {
         IMU.tareIMU(pose.getRotation());
-        swerveOdometry.resetPosition(pose, new Rotation2d());
+        swerveOdometry.resetPosition(
+            new Rotation2d(),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            },
+            pose
+        );
     }
 
     @Override
@@ -112,10 +133,12 @@ public class DriveSubsystem extends SubsystemBase {
         //Update the odometry using module states and chassis rotation
         currentRobotPose = swerveOdometry.update(
             IMU.getRobotYaw(),
-            frontLeftModule.getState(),
-            frontRightModule.getState(),
-            backLeftModule.getState(),
-            backRightModule.getState()
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
         );
 
         frontLeftModule.outputToDashboard();

@@ -44,8 +44,7 @@ public class PhotonCameraWrapper implements VisionCamera {
                 targetList.get(i).getYaw(), 
                 targetList.get(i).getPitch(), 
                 targetList.get(i).getArea(), 
-                targetList.get(i).getSkew(),
-                targetList.get(i).getCameraToTarget());
+                targetList.get(i).getSkew());
             }
         return targets;
     }

@@ -20,13 +20,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-private final VictorSP rightMotor1 = new VictorSP(0);
-private final VictorSP rightmotor2 = new (1);
-
 
   @Override
   public void robotInit() {

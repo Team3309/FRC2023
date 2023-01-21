@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -161,6 +162,13 @@ public class SwerveModule3309 implements SwerveModule {
         );
     }
 
+    public SwerveModulePosition getPosition () {
+        return new SwerveModulePosition(
+            Conversions.encoderTicksToMeters(driveMotor.getSelectedSensorPosition()), 
+            Rotation2d.fromDegrees(getSteeringDegreesFromFalcon())
+        );
+    }
+
     /**
      * @return If the belts for the steering axis have slipped
      */
@@ -245,6 +253,15 @@ public class SwerveModule3309 implements SwerveModule {
 
         public static double encoderTicksPer100msToMps (double encoderTicksPer100ms) {
             return encoderTicksPer100ms / mpsToEncoderTicksPer100ms(1);
+        }
+
+        public static double metersToEncoderTicks (double meters) {
+            double wheelDiameterMeters = Units.inchesToMeters(WHEEL_DIAMETER_INCHES);
+            return meters * (1.0/(wheelDiameterMeters * Math.PI)) * DRIVE_GEAR_RATIO * (2048.0/1.0);
+        }
+
+        public static double encoderTicksToMeters (double encoderTicks) {
+            return encoderTicks / metersToEncoderTicks(1);
         }
 
         public static double degreesToEncoderTicksFalcon (double degrees) {
