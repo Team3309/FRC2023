@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-
+import frc.robot.commands.auto.autos.Testpath;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,8 +31,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // sends the autos to the dashboard
-    autoChooser.addOption("No auto", new WaitUntilCommand(0));
-
+    autoChooser.setDefaultOption("No Auto", new WaitUntilCommand(0));
+    autoChooser.addOption("Test Auto", new Testpath(drive));
 
     // Configure the trigger bindings
     configureBindings();
