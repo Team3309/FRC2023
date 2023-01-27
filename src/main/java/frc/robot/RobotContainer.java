@@ -52,7 +52,7 @@ public class RobotContainer {
    * joysticks}.
    */  
   private void configureBindings() {
-    new Trigger(OI.leftStick::getTop).onFalse(new InstantCommand(IMU::zeroIMU));
+    new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
   }
   //Re-zeros the gyro 
 

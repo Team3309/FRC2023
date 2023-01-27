@@ -5,6 +5,7 @@ import friarLib2.vision.PhotonCameraWrapper;
 import friarLib2.vision.VisionCamera;
 import friarLib2.vision.utility.PixelToAngle;
 
+
 /**
  * Container for the vision systems
  */
