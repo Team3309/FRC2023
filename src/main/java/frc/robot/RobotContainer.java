@@ -11,9 +11,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.autos.Testpath;
+import frc.robot.commands.drive.FollowTrajectory;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,9 +36,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // sends the autos to the dashboard
-    autoChooser.setDefaultOption("No Auto", new WaitUntilCommand(0));
-    autoChooser.addOption("Test Auto", new Testpath(drive));
-
+    autoChooser.addOption("No auto", new WaitUntilCommand(0));
+    autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
+    SmartDashboard.putData(autoChooser);
     // Configure the trigger bindings
     configureBindings();
     setDefaultCommands();
@@ -41,7 +46,6 @@ public class RobotContainer {
     
 
   }
-
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -67,6 +71,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return autoChooser.getSelected();
   }
 }

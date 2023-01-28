@@ -15,4 +15,5 @@ public interface SwerveModule {
 
     default public boolean steeringHasSlipped () { return false; }
     default public void zeroSteering () {}
+    public void zeroPosition ();
 }

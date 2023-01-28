@@ -116,13 +116,18 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public void resetOdometry (Pose2d pose) {
         IMU.tareIMU(pose.getRotation());
+        frontLeftModule.zeroPosition();
+        frontRightModule.zeroPosition();
+        backLeftModule.zeroPosition();
+        backRightModule.zeroPosition();
+
         swerveOdometry.resetPosition(
             new Rotation2d(),
             new SwerveModulePosition[] {
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition()
             },
             pose
         );

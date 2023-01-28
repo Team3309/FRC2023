@@ -60,8 +60,8 @@ public final class Constants {
       public static final double MAX_AUTON_ANGULAR_ACCELERATION = 200; // Degrees/second squared
 
       /********** Holonomic Controller Gains **********/
-      public static final PIDController HOLONOMIC_CONTROLLER_PID_X = new PIDController(7, 1.5, 2); //9, 3, 0
-      public static final PIDController HOLONOMIC_CONTROLLER_PID_Y = new PIDController(7, 1.5, 2);
+      public static final PIDController HOLONOMIC_CONTROLLER_PID_X = new PIDController(4, .75,0.5); //9, 3, 0
+      public static final PIDController HOLONOMIC_CONTROLLER_PID_Y = new PIDController(4, .75,0.5);
       public static final ProfiledPIDController HOLONOMIC_CONTROLLER_PID_THETA = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(MAX_AUTON_ANGULAR_SPEED, MAX_AUTON_ANGULAR_ACCELERATION));
 
       /******** PID Gains ********/

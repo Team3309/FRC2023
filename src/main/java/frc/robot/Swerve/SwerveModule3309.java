@@ -169,6 +169,10 @@ public class SwerveModule3309 implements SwerveModule {
         );
     }
 
+    public void zeroPosition () {
+        driveMotor.setSelectedSensorPosition(0);
+    }
+
     /**
      * @return If the belts for the steering axis have slipped
      */
@@ -239,6 +243,7 @@ public class SwerveModule3309 implements SwerveModule {
         SmartDashboard.putNumber(name + " CANCoder degrees", getSteeringDegreesFromEncoder());
         SmartDashboard.putNumber(name + " Falcon degrees", getSteeringDegreesFromFalcon());
         SmartDashboard.putNumber(name + " Falcon raw value", steeringMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber(name + " Position", getPosition().distanceMeters);
         SmartDashboard.putBoolean(name + " has slipped", steeringHasSlipped());
     }
 
