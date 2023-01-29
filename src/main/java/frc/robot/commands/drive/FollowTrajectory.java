@@ -27,7 +27,7 @@ public class FollowTrajectory extends CommandBase {
 
     private final HolonomicDriveController holonomicController;
     private final Timer timer = new Timer();
-    private final PathPlannerTrajectory trajectory;
+    private PathPlannerTrajectory trajectory;
 
     private final Field2d field = new Field2d();
 
@@ -36,7 +36,7 @@ public class FollowTrajectory extends CommandBase {
      */
     public FollowTrajectory (
         DriveSubsystem drive,
-        String trajectoryJSON,
+        PathPlannerTrajectory trajectory,
         double maxSpeed,
         double maxAccel,
         boolean resetOdometry
@@ -45,6 +45,7 @@ public class FollowTrajectory extends CommandBase {
         addRequirements(drive);
 
         this.resetOdometry = resetOdometry;
+        this.trajectory = trajectory;
 
         // The holonomic controller uses the current robot pose and the target pose (from the trajectory) to calculate the required ChassisSpeeds to get to that location
         // See https://docs.wpilib.org/en/stable/docs/software/advanced-controls/trajectories/holonomic.html for more details
@@ -56,14 +57,14 @@ public class FollowTrajectory extends CommandBase {
         // Set the range where the holonomic controller considers itself at its target location
         holonomicController.setTolerance(new Pose2d(new Translation2d(.09, .09), Rotation2d.fromDegrees(3)));
 
-        trajectory = openTrajectoryFromJSON(trajectoryJSON, maxSpeed, maxAccel); //Load the Pathplanner trajectory
         PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance()); // Mirror if we're on the red alliance
 
         SmartDashboard.putData("Holonomic target", field);
     }
 
     public FollowTrajectory (DriveSubsystem drive, String trajectoryJSON, boolean resetOdometry) {
-        this(drive, trajectoryJSON, Constants.Drive.MAX_AUTON_SPEED, Constants.Drive.MAX_AUTON_ACCELERATION, resetOdometry);
+        this(drive, null, Constants.Drive.MAX_AUTON_SPEED, Constants.Drive.MAX_AUTON_ACCELERATION, resetOdometry);
+        this.trajectory = openTrajectoryFromJSON(trajectoryJSON, Constants.Drive.MAX_AUTON_SPEED, Constants.Drive.MAX_AUTON_ACCELERATION); //Load the Pathplanner trajectory        
     }
 
     public FollowTrajectory (DriveSubsystem drive, String trajectoryJSON) {
