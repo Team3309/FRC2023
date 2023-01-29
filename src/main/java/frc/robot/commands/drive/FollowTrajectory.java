@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,6 +57,7 @@ public class FollowTrajectory extends CommandBase {
         holonomicController.setTolerance(new Pose2d(new Translation2d(.09, .09), Rotation2d.fromDegrees(3)));
 
         trajectory = openTrajectoryFromJSON(trajectoryJSON, maxSpeed, maxAccel); //Load the Pathplanner trajectory
+        PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance()); // Mirror if we're on the red alliance
 
         SmartDashboard.putData("Holonomic target", field);
     }
