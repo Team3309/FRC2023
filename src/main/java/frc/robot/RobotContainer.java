@@ -36,8 +36,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // sends the autos to the dashboard
-    autoChooser.addOption("No auto", new WaitUntilCommand(0));
+    autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
     autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
+    autoChooser.addOption("Curve Test Path",(Command) new FollowTrajectory(drive, "CurveTestPath", true));
     SmartDashboard.putData(autoChooser);
     // Configure the trigger bindings
     configureBindings();
