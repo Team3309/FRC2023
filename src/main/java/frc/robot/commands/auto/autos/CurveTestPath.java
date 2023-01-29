@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class CurveTestPath extends CommandBase {
+public class CurveTestPath extends SequentialCommandGroup {
 
     
     public CurveTestPath(DriveSubsystem drive)  {
+        addCommands(
+            new FollowTrajectory(drive, "CurveTestPath", true)
+        );
 	}
 
     // This will load the file "CurveTestPath" and generate it with different path constraints for each segment
