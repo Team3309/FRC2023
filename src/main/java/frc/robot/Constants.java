@@ -95,9 +95,8 @@ public final class Constants {
     /**
      * Constants for the claw
      */
-    public static class Claw {
+    public static class Clamp {
       /********** Solenoid PCM Ports **********/
-      public static final int LEFT_CLAW_SOLENOID_ID = 1;
-      public static final int RIGHT_CLAW_SOLENOID_ID = 2;
+      public static final int CLAMP_SOLENOID_ID = 1;
     }
 }
