@@ -91,4 +91,13 @@ public final class Constants {
         public static final double JOINT_A_MOTOR_GEAR_RATIO = 1.0;
         public static final double JOINT_B_MOTOR_GEAR_RATIO = 1.0;
     }
+
+    /**
+     * Constants for the claw
+     */
+    public static class Claw {
+      /********** Solenoid PCM Ports **********/
+      public static final int LEFT_CLAW_SOLENOID_ID = 1;
+      public static final int RIGHT_CLAW_SOLENOID_ID = 2;
+    }
 }
