@@ -12,12 +12,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
-
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -34,6 +35,7 @@ public class RobotContainer {
     
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        boolean toggle = false;
         // sends the autos to the dashboard
         autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
         autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
@@ -56,6 +58,9 @@ public class RobotContainer {
     private void configureBindings() {
         //Re-zeros the gyro 
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+
+        
+        
     }
     
     private void setDefaultCommands() {
