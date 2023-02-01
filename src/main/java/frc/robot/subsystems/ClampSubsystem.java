@@ -2,10 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import static frc.robot.Constants.Clamp.*;
 import frc.robot.Pneumatics;
+
 
 public class ClampSubsystem extends SubsystemBase {
     private final Solenoid clampSolenoid;
@@ -26,6 +28,14 @@ public class ClampSubsystem extends SubsystemBase {
     */
     public void setClamp (boolean deployed) {
         clampSolenoid.set(!deployed);
+    }
+
+    public void openClamp (boolean deployed) {
+        openClamp(true);
+    }
+
+    public void closeClamp (boolean deployed) {
+        closeClamp(false);
     }
 
     @Override
