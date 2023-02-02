@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import static frc.robot.Constants.Clamp.*;
+
+import javax.lang.model.util.ElementScanner14;
+
 import frc.robot.Pneumatics;
 
 
@@ -30,18 +33,29 @@ public class ClampSubsystem extends SubsystemBase {
         clampSolenoid.set(!deployed);
     }
 
-    public void openClamp (boolean deployed) {
-        openClamp(true);
+    public void DeployClamp (boolean deployed) {
+        DeployClamp(true);
+            int is = 1; 
     }
 
-    public void closeClamp (boolean deployed) {
-        closeClamp(false);
+    public void OpenClamp (boolean deployed) {
+        OpenClamp(false);
+    }       int is = 0;
+
+    /** 
+     * @return True if the Clamp is Deployed
+     */
+    public boolean isClampDeployed () { // TODO ask Mark if this code is good
+        boolean isDeployed = is > 1;
+        
+        return isDeployed;
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Air Storage Pressure", Pneumatics.getStoragePSI());
         SmartDashboard.putBoolean("Compressor State", Pneumatics.getCompressorState());
+        SmartDashboard.putBoolean("Clamp Deplyment", isClampDeployed());
     }
 
 }    
