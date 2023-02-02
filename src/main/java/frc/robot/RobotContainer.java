@@ -39,7 +39,7 @@ public class RobotContainer {
         // sends the autos to the dashboard
         autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
         autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
-        autoChooser.addOption("Curve Test Path",new FollowTrajectory(drive, "Curve Test Path", true));
+        autoChooser.addOption("CurveTestPath",new FollowTrajectory(drive, "CurveTestPath", true));
         SmartDashboard.putData(autoChooser);
         // Configure the trigger bindings
         configureBindings();
