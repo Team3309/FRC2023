@@ -1,3 +1,4 @@
+
 package friarLib2.vision;
 
 import javax.naming.spi.DirStateFactory.Result;
