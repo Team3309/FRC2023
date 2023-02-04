@@ -1,6 +1,7 @@
 package friarLib2.vision;
 
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Represents a target from a vision system
@@ -42,4 +43,5 @@ public class VisionTarget {
     public double getArea () {return area;}
     public double getSkew () {return skew;}
     public Transform2d getPose () {return pose;}
+
 }
