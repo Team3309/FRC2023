@@ -93,7 +93,7 @@ public final class Constants {
     }
 
     /**
-     * Constants for the claw
+     * Constants for the clamp
      */
     public static class Clamp {
       /********** Solenoid PCM Ports **********/
