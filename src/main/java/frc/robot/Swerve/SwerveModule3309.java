@@ -16,7 +16,7 @@ import friarLib2.math.CTREModuleState;
 import friarLib2.utility.PIDParameters;
 
 /**
- * Represents the 2022 revision of our swerve module.
+ * Represents the 2023 revision of our swerve module.
  * 
  * <p>
  * This year's version features an improved powertrain for the drive motor
