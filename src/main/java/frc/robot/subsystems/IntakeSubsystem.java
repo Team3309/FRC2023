@@ -15,7 +15,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private final WPI_TalonSRX leftIntakeMotor;
     private final WPI_TalonSRX rightIntakeMotor;
     
-}
 public IntakeSubsystem() {
     leftIntakeMotor = new WPI_TalonSRX(LEFT_INTAKE_MOTOR_ID);
     rightIntakeMotor = new WPI_TalonSRX(RIGHT_INTAKE_MOTOR_ID);
@@ -25,7 +24,7 @@ public IntakeSubsystem() {
 
     leftIntakeMotor.setInverted(true);
     rightIntakeMotor.setInverted(false);
+    }
 
-    
 
 }
