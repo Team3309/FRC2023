@@ -46,7 +46,7 @@ public class ClampSubsystem extends SubsystemBase {
      * @return True if the Clamp is Deployed
      */
     public boolean isClampDeployed () { // TODO ask Mark if this code is good
-        boolean isDeployed = is > 1;
+        boolean isDeployed = is > 0;
         
         return isDeployed;
     }

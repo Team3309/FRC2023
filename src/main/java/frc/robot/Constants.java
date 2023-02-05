@@ -92,11 +92,24 @@ public final class Constants {
         public static final double JOINT_B_MOTOR_GEAR_RATIO = 1.0;
     }
 
-    /**
+    /*
      * Constants for the clamp
      */
     public static class Clamp {
       /********** Solenoid PCM Ports **********/
       public static final int CLAMP_SOLENOID_ID = 1;
     }
+
+    /* 
+     * Constants for the Intake
+    */
+    public static class Intake {
+        /********** CAN ID's **********/
+        public static final int LEFT_INTAKE_MOTOR_ID = 4;
+        public static final int RIGHT_INTAKE_MOTOR_ID = 3;
+
+        /********** Tuning Constants **********/
+        public static final double INTAKE_MOTOR_POWER = 1;
+    }
 }
+
