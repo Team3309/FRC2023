@@ -96,8 +96,8 @@ public final class Constants {
      * Constants for the clamp
      */
     public static class Clamp {
-      /********** Solenoid PCM Ports **********/
-      public static final int CLAMP_SOLENOID_ID = 1;
+        /********** Solenoid PCM Ports **********/
+        public static final int CLAMP_SOLENOID_ID = 1;
     }
 
     /* 
@@ -111,5 +111,19 @@ public final class Constants {
         /********** Tuning Constants **********/
         public static final double INTAKE_MOTOR_POWER = 1;
     }
+
+    /*
+     * Constants for the Turntable
+     */
+    public static class Turntable {
+        /********** CAN ID's **********/
+        public static final int TURNTABLE_MOTOR_ID = 5;
+
+        /********** Tuning Constants **********/
+        public static final double TURNTABLE_MOTOR_POWER = 1;
+        public static final double TURNTABLE_DEFAULT_DEGREES = 0;
+    }
+
 }
+
 
