@@ -21,14 +21,14 @@ import friarLib2.utility.PIDParameters;
 * <p>It is advised to statically import this class (or one of its inner classes) wherever the
 * constants are needed, to reduce verbosity.
 */
-public final class Constants {
+public final class Constants { 
     
     
     /**
     *  For Constants that are not in a subsystem
     */
     
-    public static final double JOYSTICK_DEADBAND = 0.09; 
+    public static final double JOYSTICK_DEADBAND = 0.09; // TODO a lot of the constants in this file are placeholders, remainder to change them
     public static final double XBOX_DEADBAND = 0.05;
     
     public static final int PCM_CAN_ID = 1;
@@ -122,8 +122,13 @@ public final class Constants {
         /********** Tuning Constants **********/
         public static final double TURNTABLE_MOTOR_POWER = 1;
         public static final double TURNTABLE_DEFAULT_DEGREES = 0;
-    }
 
+        /********** Rotating Constnats **********/
+        public static final double TURNATABLE_DEFAULT_POSITION = 0;
+        public static final double TURNTABLE_ORIENTATION = 1;
+       
+    }
 }
+
 
 
