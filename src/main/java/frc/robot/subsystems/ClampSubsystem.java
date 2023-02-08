@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import static frc.robot.Constants.Clamp.*;
 
-import javax.lang.model.util.ElementScanner14;
 
 import frc.robot.Pneumatics;
 
@@ -46,7 +45,7 @@ public class ClampSubsystem extends SubsystemBase {
      * @return True if the Clamp is Deployed
      */
     public boolean isClampDeployed () { // TODO ask Mark if this code is good
-        boolean isDeployed = is > 0;
+        boolean isDeployed = is == 1;
         
         return isDeployed;
     }
