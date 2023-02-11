@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import static frc.robot.Constants.Clamp.*;
@@ -32,20 +31,19 @@ public class ClampSubsystem extends SubsystemBase {
         clampSolenoid.set(!deployed);
     }
 
-    public void DeployClamp (boolean deployed) {
-        DeployClamp(true);
-            int is = 1; 
+    public void closeClamp (boolean deployed) {
+        setClamp(true);
     }
 
-    public void OpenClamp (boolean deployed) {
-        OpenClamp(false);
-    }       int is = 0;
+    public void openClamp (boolean deployed) {
+        setClamp(false);
+    }      
 
     /** 
      * @return True if the Clamp is Deployed
      */
-    public boolean isClampDeployed () { // TODO ask Mark if this code is good
-        boolean isDeployed = is == 1;
+    public boolean isClampClosed () { 
+        boolean isDeployed = clampSolenoid.get();
         
         return isDeployed;
     }
@@ -54,7 +52,7 @@ public class ClampSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Air Storage Pressure", Pneumatics.getStoragePSI());
         SmartDashboard.putBoolean("Compressor State", Pneumatics.getCompressorState());
-        SmartDashboard.putBoolean("Clamp Deplyment", isClampDeployed());
+        SmartDashboard.putBoolean("Clamp state", isClampClosed());
     }
 
 }    
