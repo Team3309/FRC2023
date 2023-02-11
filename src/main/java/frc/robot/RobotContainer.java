@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.drive.DriveTeleop;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClampSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants.Intake;
 import frc.robot.commands.Intake.ActivateRollers;
 import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
@@ -32,6 +34,8 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final ArmSubsystem arm = new ArmSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem();
+    private final ClampSubsystem clamp = new ClampSubsystem();
+    
     
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     
@@ -61,7 +65,7 @@ public class RobotContainer {
         //Re-zeros the gyro 
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
         //Intake
-       // new Trigger(OI.XboxController::leftBumper).whileTrue(new Command(ActivateRollers::intake));
+       new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
 
         
