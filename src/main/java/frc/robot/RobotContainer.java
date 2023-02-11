@@ -16,9 +16,11 @@ import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.Intake.ActivateRollers;
 import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj.XboxController;
+import friarLib2.hid.XboxController3309;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -58,6 +60,9 @@ public class RobotContainer {
     private void configureBindings() {
         //Re-zeros the gyro 
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+        //Intake
+       // new Trigger(OI.XboxController::leftBumper).whileTrue(new Command(ActivateRollers::intake));
+
 
         
         

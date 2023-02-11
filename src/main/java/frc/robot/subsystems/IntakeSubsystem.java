@@ -26,5 +26,30 @@ public IntakeSubsystem() {
     bottomIntakeMotor.setInverted(false);
     }
 
+//set intake motor power
+public void topIntakeMotorPower() {
+    topIntakeMotor.set(ControlMode.PercentOutput, TOP_INTAKE_MOTOR_POWER);
+}
+public void bottomIntakeMotorPower() {
+    bottomIntakeMotor.set(ControlMode.PercentOutput, BOTTOM_INTAKE_MOTOR_POWER);
+}
+
+//activate or deactivate the rollers
+public void setTopIntakeRoller (double power) {
+    topIntakeMotor.set(ControlMode.PercentOutput, power);
+}
+
+public void setTopIntakeRoller (boolean on) {
+    setTopIntakeRoller(on ? TOP_INTAKE_MOTOR_POWER : 0);
+}
+
+public void setBottomIntakeRoller (double power) {
+    bottomIntakeMotor.set(ControlMode.PercentOutput, power);
+}
+
+    public void setBottomIntakeRoller (boolean on) {
+        setBottomIntakeRoller(on ? BOTTOM_INTAKE_MOTOR_POWER : 0);
+    }
+
 
 }
