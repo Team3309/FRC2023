@@ -105,11 +105,12 @@ public final class Constants {
     */
     public static class Intake {
         /********** CAN ID's **********/
-        public static final int LEFT_INTAKE_MOTOR_ID = 4;
-        public static final int RIGHT_INTAKE_MOTOR_ID = 3;
+        public static final int TOP_INTAKE_MOTOR_ID = 4;
+        public static final int BOTTOM_INTAKE_MOTOR_ID = 3;
 
         /********** Tuning Constants **********/
-        public static final double INTAKE_MOTOR_POWER = 1;
+        public static final double TOP_INTAKE_MOTOR_POWER = 1;
+        public static final double BOTTOM_INTAKE_MOTOR_POWER = 2;
     }
 
     /*

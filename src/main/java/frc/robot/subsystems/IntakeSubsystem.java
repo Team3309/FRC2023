@@ -12,18 +12,18 @@ import static frc.robot.Constants.Intake.*;
 
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final WPI_TalonSRX leftIntakeMotor;
-    private final WPI_TalonSRX rightIntakeMotor;
+    private final WPI_TalonSRX topIntakeMotor;
+    private final WPI_TalonSRX bottomIntakeMotor;
     
 public IntakeSubsystem() {
-    leftIntakeMotor = new WPI_TalonSRX(LEFT_INTAKE_MOTOR_ID);
-    rightIntakeMotor = new WPI_TalonSRX(RIGHT_INTAKE_MOTOR_ID);
+    topIntakeMotor = new WPI_TalonSRX(TOP_INTAKE_MOTOR_ID);
+    bottomIntakeMotor = new WPI_TalonSRX(BOTTOM_INTAKE_MOTOR_ID);
 
-    leftIntakeMotor.setNeutralMode(NeutralMode.Brake);
-    rightIntakeMotor.setNeutralMode(NeutralMode.Brake);
+    topIntakeMotor.setNeutralMode(NeutralMode.Brake);
+    bottomIntakeMotor.setNeutralMode(NeutralMode.Brake);
 
-    leftIntakeMotor.setInverted(true);
-    rightIntakeMotor.setInverted(false);
+    topIntakeMotor.setInverted(true);
+    bottomIntakeMotor.setInverted(false);
     }
 
 
