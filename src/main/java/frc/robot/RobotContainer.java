@@ -63,9 +63,9 @@ public class RobotContainer {
     */  
     private void configureBindings() {
         //Re-zeros the gyro 
-        new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+        //new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
         //Intake
-       new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
+       //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
 
         
