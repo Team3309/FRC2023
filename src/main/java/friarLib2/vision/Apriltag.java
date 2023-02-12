@@ -1,4 +1,4 @@
-
+/* 
 package friarLib2.vision;
 
 import javax.naming.spi.DirStateFactory.Result;
@@ -35,7 +35,7 @@ public class Apriltag {
 
     /**
      * @return the object with index 0
-     */
+     
     @Override
     public VisionTarget getBestTarget() {
         try {
@@ -47,7 +47,7 @@ public class Apriltag {
 
       /**
      * @param pipeline the pipeline's index, use "driver mode" to enter driver mode
-     */
+     
     @Override
     public void setPipeline(String pipeline) {
         if (pipeline.equals("driver mode")) {
@@ -70,3 +70,4 @@ public class Apriltag {
 
     
 } 
+*/
