@@ -39,7 +39,6 @@ public class TurntableSubsystem extends SubsystemBase {
      */
     public void defaultPosition() {
         turntableMotor.set(ControlMode.Position, TURNATABLE_DEFAULT_POSITION);
-            int check = 0;
     }
 
     /*
@@ -47,30 +46,5 @@ public class TurntableSubsystem extends SubsystemBase {
      */
     public void orientCone() {
         turntableMotor.set(ControlMode.Position, TURNTABLE_ORIENTATION);
-            int check = 1;
-    }
-
-    /**
-     * @return If the turntable is Default position
-     */
-    public boolean isDefaultPosition() {
-        boolean isDefault = check == 0;
-
-        return isDefault;
-    }
-
-    /**
-     * @return If the turntable is at a oriented position
-     */
-    public boolean isOrientedPosition() {
-        boolean isOriented = check == 1;
-
-        return isOriented;
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putBoolean("Is turntable default", isDefaultPosition());
-        SmartDashboard.putBoolean("Is turntable oriented", isOrientedPosition());
     }
 }
