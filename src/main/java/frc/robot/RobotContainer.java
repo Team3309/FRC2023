@@ -23,6 +23,8 @@ import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj.XboxController;
 import friarLib2.hid.XboxController3309;
+import frc.robot.commands.drive.TurnInDirectionOfTarget;
+
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,6 +37,7 @@ public class RobotContainer {
     private final ArmSubsystem arm = new ArmSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem();
     private final ClampSubsystem clamp = new ClampSubsystem();
+
     
     
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -65,7 +68,10 @@ public class RobotContainer {
         //Re-zeros the gyro 
         //new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
         //Intake
-       //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
+        //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
+        //vision
+        new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
+
 
 
         
