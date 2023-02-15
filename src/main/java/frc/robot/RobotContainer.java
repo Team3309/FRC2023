@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.Intake;
-import frc.robot.commands.Intake.ActivateRollers;
+import frc.robot.commands.intake.ActivateRollers;
 import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj.XboxController;
