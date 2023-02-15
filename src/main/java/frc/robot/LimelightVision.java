@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import friarLib2.vision.LimelightCamera;
 import friarLib2.vision.PhotonCameraWrapper;
 import friarLib2.vision.VisionCamera;
 import friarLib2.vision.utility.PixelToAngle;
@@ -9,9 +10,9 @@ import friarLib2.vision.utility.PixelToAngle;
 /**
  * Container for the vision systems
  */
-public class Vision {
+public class LimelightVision {
 
-    public static VisionCamera shooterCamera = new PhotonCameraWrapper("gloworm");
+    public static VisionCamera shooterCamera = new LimelightCamera();
 
     private static final PixelToAngle ANGLE_CONVERTER = new PixelToAngle(320, 240, 54, 41); // Constants for the limelight 2
     private static final double HEIGHT_OF_CAMERA = 0.7747; // Meters
