@@ -10,7 +10,7 @@ import friarLib2.vision.utility.PixelToAngle;
 /**
  * Container for the vision systems
  */
-public class LimelightVision {
+public class Vision {
 
     public static VisionCamera shooterCamera = new LimelightCamera();
 
