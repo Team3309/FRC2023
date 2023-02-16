@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -35,8 +36,7 @@ public final class Constants {
     public static final int PIGEON_IMU_ID = 19;
     
     public static final PneumaticsModuleType PCM_TYPE= PneumaticsModuleType.REVPH;
-    
-    
+
     /**
     * Constants for the Drivetrain
     */
@@ -72,7 +72,11 @@ public final class Constants {
         public static final double MAX_TELEOP_ROTATIONAL_SPEED = Math.toRadians(700); // Radians/second
         public static final double MAX_TELEOP_ACCELERATION = 7; // Maters/second squared
         public static final double MAX_TELEOP_DECELERATION = 11;
-        
+
+        /********** Auto Balance  **********/
+        public static final double CHARGE_STATION_GOAL_DEGREES = 0;
+        public static final double CHARGE_STATION_ANGLE_TRESHOLD_DEGREES = 1;
+        public static final double CHARGE_STATION_DRIVE_KP = 0.015;
     }
     
     /**
