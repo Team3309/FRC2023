@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.drive.AutoBalance;
 import frc.robot.commands.drive.DriveTeleop;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClampSubsystem;
@@ -37,6 +38,7 @@ public class RobotContainer {
     private final ArmSubsystem arm = new ArmSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem();
     private final ClampSubsystem clamp = new ClampSubsystem();
+    
 
     
     
@@ -66,11 +68,16 @@ public class RobotContainer {
     */  
     private void configureBindings() {
         //Re-zeros the gyro 
-        //new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+        new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+
         //Intake
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
+
         //vision
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
+
+        //AutoBalance
+        new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
 
 
 
