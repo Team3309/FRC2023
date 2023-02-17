@@ -15,6 +15,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 * project.
 */
 public class Robot extends TimedRobot {
+    public enum EGameMode {
+        None,
+        Disabled,
+        Autonomous,
+        Teleop,
+        Test
+    }
+    
+    static public EGameMode GameMode;
+
     private Command m_autonomousCommand;
     
     private RobotContainer m_robotContainer;
@@ -25,7 +35,8 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
-    }
+        GameMode = EGameMode.None;
+    }  
     
     /**
     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -45,7 +56,9 @@ public class Robot extends TimedRobot {
     
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        GameMode = EGameMode.Disabled;
+    }
     
     @Override
     public void disabledPeriodic() {}
@@ -53,6 +66,8 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
+        GameMode = EGameMode.Autonomous;
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         
         // schedule the autonomous command (example)
@@ -67,6 +82,8 @@ public class Robot extends TimedRobot {
     
     @Override
     public void teleopInit() {
+        GameMode = EGameMode.Teleop;
+
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
@@ -82,6 +99,8 @@ public class Robot extends TimedRobot {
     
     @Override
     public void testInit() {
+        GameMode = EGameMode.Test;
+
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
     }
