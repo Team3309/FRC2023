@@ -42,7 +42,11 @@ public class AutoBalance extends CommandBase {
         robotSpeed = Math.copySign(0.4, robotSpeed);
         }
 
-        drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));     
+        drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));   
+        
+        System.out.println("Auto balancing speed: " + robotSpeed);
+        System.out.println("Error: " + errorUntilFlat);
+        System.out.println("Current angle " + currentAngle);
     }
 
     @Override
@@ -52,6 +56,6 @@ public class AutoBalance extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(errorUntilFlat) < 1;
+        return Math.abs(errorUntilFlat) < Constants.Drive.CHARGE_STATION_ANGLE_TRESHOLD_DEGREES;
     }
 }
