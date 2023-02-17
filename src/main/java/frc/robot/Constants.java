@@ -75,8 +75,8 @@ public final class Constants {
 
         /********** Auto Balance  **********/
         public static final double CHARGE_STATION_GOAL_DEGREES = 0;
-        public static final double CHARGE_STATION_ANGLE_TRESHOLD_DEGREES = 1;
-        public static final double CHARGE_STATION_DRIVE_KP = 0.015;
+        public static final double CHARGE_STATION_ANGLE_TRESHOLD_DEGREES = 0.1;
+        public static final double CHARGE_STATION_DRIVE_KP = 1.5;
     }
     
     /**
