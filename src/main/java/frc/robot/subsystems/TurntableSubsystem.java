@@ -41,10 +41,5 @@ public class TurntableSubsystem extends SubsystemBase {
         turntableMotor.set(ControlMode.Position, TURNATABLE_DEFAULT_POSITION);
     }
 
-    /*
-     * Turn to orient the cone
-     */
-    public void orientCone() {
-        turntableMotor.set(ControlMode.Position, TURNTABLE_ORIENTATION);
-    }
+    
 }

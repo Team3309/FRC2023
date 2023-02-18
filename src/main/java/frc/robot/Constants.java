@@ -130,7 +130,7 @@ public final class Constants {
 
         /********** Rotating Constnats **********/
         public static final double TURNATABLE_DEFAULT_POSITION = 0;
-        public static final double TURNTABLE_ORIENTATION = 1;
+        
        
     }
 }
