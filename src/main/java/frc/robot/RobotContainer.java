@@ -10,6 +10,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClampSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.TurntableSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -79,6 +80,8 @@ public class RobotContainer {
         //AutoBalance
         new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
 
+        //Turntable
+        new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
 
 
         
