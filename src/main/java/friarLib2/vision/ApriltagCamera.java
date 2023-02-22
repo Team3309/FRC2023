@@ -5,6 +5,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class ApriltagCamera implements VisionCamera {
 
+    
+
     @Override
     public boolean hasTargets() {
         return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(6) == 1;
