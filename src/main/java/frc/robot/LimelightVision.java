@@ -8,10 +8,11 @@ import friarLib2.vision.utility.PixelToAngle;
 
 
 /**
- * Container for the vision systems
+ * Container for the limelightvision systems
  */
-public class Vision {
+public class LimelightVision {
 
+    
     public static VisionCamera shooterCamera = new LimelightCamera();
 
     private static final PixelToAngle ANGLE_CONVERTER = new PixelToAngle(320, 240, 54, 41); // Constants for the limelight 2

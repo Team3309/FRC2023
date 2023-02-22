@@ -21,11 +21,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.Intake;
 import frc.robot.commands.Intake.ActivateRollers;
+import frc.robot.commands.auto.autos.AutoBalancePath;
 import frc.robot.commands.auto.autos.Testpath;
 import frc.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj.XboxController;
 import friarLib2.hid.XboxController3309;
 import frc.robot.commands.drive.TurnInDirectionOfTarget;
+import frc.robot.commands.drive.TurnInDirectionOfApriltag;
 
 
 /**
@@ -52,6 +54,7 @@ public class RobotContainer {
         autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
         autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
         autoChooser.addOption("CurveTestPath",new FollowTrajectory(drive, "CurveTestPath", true));
+        autoChooser.addOption("AutoBalancePath", new AutoBalancePath(drive));
         SmartDashboard.putData(autoChooser);
         // Configure the trigger bindings
         configureBindings();
@@ -77,11 +80,13 @@ public class RobotContainer {
         //vision
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
 
-        //AutoBalance
-        new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
+        new Trigger(OI.rightStick::getTrigger).whileTrue(new TurnInDirectionOfApriltag(drive));
 
-        //Turntable
-        new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
+        //AutoBalance
+       // new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
+
+        // //Turntable
+        // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
 
 
         
