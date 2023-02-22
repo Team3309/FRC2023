@@ -50,8 +50,8 @@ public class AutoBalance extends CommandBase {
         // } 
 
         //Limit the max speed of the robot
-        if (Math.abs(robotSpeed) > 1) {
-        robotSpeed = Math.copySign(1, robotSpeed);
+        if (Math.abs(robotSpeed) > .5) {
+        robotSpeed = Math.copySign(.5, robotSpeed);
         }
 
         drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));   
