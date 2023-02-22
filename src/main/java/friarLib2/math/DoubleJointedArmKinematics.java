@@ -63,7 +63,7 @@ public class DoubleJointedArmKinematics { //TODO this probably doesn't even work
         MatrixTg[0] = Ta;
         MatrixTg[1] = Tb;
 
-        double T = MatrixM + MatrixC + MatrixTg;
+        // double T = MatrixM + MatrixC + MatrixTg;
 
         // double[] MatrixTg = new double[4];
         // MatrixTg[0] = ;
