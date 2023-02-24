@@ -6,10 +6,12 @@ import frc.robot.subsystems.DriveSubsystem;
 import friarLib2.utility.Vector3309;
 
 
-public class TurnInDirectionOfApriltag extends DriveTeleop {
-    public TurnInDirectionOfApriltag (DriveSubsystem drive) {
+public class TurnInDirectionOfAprilTag extends DriveTeleop {
+    
+    public TurnInDirectionOfAprilTag(DriveSubsystem drive) {
         super(drive);
     }
+    
      /**
      * Use the data from the vision system to point towards the target
      */
