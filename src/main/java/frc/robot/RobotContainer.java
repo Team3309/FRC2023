@@ -4,30 +4,20 @@
 
 package frc.robot;
 
-import frc.robot.commands.drive.AutoBalance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.auto.autos.AutoBalancePath;
 import frc.robot.commands.drive.DriveTeleop;
+import frc.robot.commands.drive.FollowTrajectory;
+import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClampSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.TurntableSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants.Intake;
-import frc.robot.commands.Intake.ActivateRollers;
-import frc.robot.commands.auto.autos.AutoBalancePath;
-import frc.robot.commands.auto.autos.Testpath;
-import frc.robot.commands.drive.FollowTrajectory;
-import edu.wpi.first.wpilibj.XboxController;
-import friarLib2.hid.XboxController3309;
-import frc.robot.commands.drive.TurnInDirectionOfTarget;
-import frc.robot.commands.drive.TurnInDirectionOfApriltag;
 
 
 /**
@@ -85,7 +75,7 @@ public class RobotContainer {
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
-       // new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
+        // new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
