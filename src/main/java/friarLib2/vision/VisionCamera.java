@@ -9,6 +9,7 @@ public interface VisionCamera {
     public boolean hasTargets ();
     public VisionTarget[] getTargets ();
     public VisionTarget getBestTarget ();
-    public void setPipeline (String pipelineName);
+    public int getPipeline ();
+    public void setPipeline (int index);
     public void setLights (LedMode mode);
 }

@@ -80,7 +80,9 @@ public class RobotContainer {
         //vision
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
 
-        new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfApriltag(drive));
+        new Trigger(OI.rightStick::getTop).onTrue(ApriltagVision.SetPipelineCommand(0));
+
+        //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
        // new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));

@@ -33,8 +33,13 @@ public class LimelightCamera implements VisionCamera {
     }
 
     @Override
-    public void setPipeline(String pipelineName) {
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(Integer.parseInt(pipelineName));
+    public int getPipeline() {
+        return NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").getNumber(-1).intValue();
+    }
+
+    @Override
+    public void setPipeline(int index) {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(index);
     }
 
     @Override

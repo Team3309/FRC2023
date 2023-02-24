@@ -61,17 +61,19 @@ public class PhotonCameraWrapper implements VisionCamera {
         }
     }
 
-    /**
-     * @param pipeline the pipeline's index, use "driver mode" to enter driver mode
-     */
     @Override
-    public void setPipeline(String pipeline) {
-        if (pipeline.equals("driver mode")) {
+    public void setPipeline(int index) {
+        if (index == 0) {
             camera.setDriverMode(true);
         } else {
             camera.setDriverMode(false);
-            camera.setPipelineIndex(Integer.parseInt(pipeline));
+            camera.setPipelineIndex(index);
         }
+    }
+
+    @Override
+    public int getPipeline() {
+        return camera.getPipelineIndex();
     }
 
     @Override
