@@ -19,6 +19,6 @@ public class Pneumatics {
      * @return If the compressor is on (true) or off (false)
      */
     public static boolean getCompressorState() {
-        return COMPRESSOR.enabled();
+        return COMPRESSOR.isEnabled();
     }
 }
