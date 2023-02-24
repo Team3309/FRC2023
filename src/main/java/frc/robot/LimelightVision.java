@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import friarLib2.vision.LimelightCamera;
 import friarLib2.vision.PhotonCameraWrapper;
 import friarLib2.vision.VisionCamera;
@@ -12,6 +14,16 @@ import friarLib2.vision.utility.PixelToAngle;
  */
 public class LimelightVision {
 
+    public static Command TogglePipelineCommand()
+    {
+        return Commands.runOnce( () -> shooterCamera.setPipeline(1 - shooterCamera.getPipeline()) );
+    }
+
+    public static Command SetPipelineCommand(int index)
+    {
+        return Commands.runOnce( () -> shooterCamera.setPipeline(index) );
+    }
+    
     
     public static VisionCamera shooterCamera = new LimelightCamera();
 
