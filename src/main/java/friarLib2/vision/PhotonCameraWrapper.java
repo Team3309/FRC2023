@@ -7,7 +7,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.common.hardware.VisionLEDMode;
 
-public class PhotonCameraWrapper implements VisionCamera {
+public class PhotonCameraWrapper implements IVisionCamera {
 
     private PhotonCamera camera;
 

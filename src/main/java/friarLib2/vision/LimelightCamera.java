@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * Wrapper for the limelight's networktables API, which can be found at 
  * https://docs.limelightvision.io/en/latest/networktables_api.html
  */
-public class LimelightCamera implements VisionCamera {
+public class LimelightCamera implements IVisionCamera {
 
     @Override
     public boolean hasTargets() {
