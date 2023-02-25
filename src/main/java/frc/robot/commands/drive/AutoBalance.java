@@ -3,6 +3,7 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.IMU;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
@@ -14,7 +15,7 @@ public class AutoBalance extends CommandBase {
     
     private DriveSubsystem drive;
     
-    private double errorUntilFlat; //error untill the robot is flat
+    private double errorUntilFlat; //error until the robot is flat
     private double currentAngle;
     private double robotSpeed;
 
@@ -54,13 +55,17 @@ public class AutoBalance extends CommandBase {
         robotSpeed = Math.copySign(.5, robotSpeed);
         }
 
-        drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));   
+        drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));
+
         String output = String.format("Speed: %.2f %.2f \t Error: %.2f %.2f \t Angle: %.2f", rawSpeed, robotSpeed, error, errorUntilFlat, currentAngle);
         System.out.println(output);
     }
 
     @Override
     public void end(boolean interrupted) {
+        drive.stopChassis();
+        drive.setChassisSpeeds(new ChassisSpeeds(robotSpeed, 0, 0));
+        new WaitCommand(0.5);
         drive.stopChassis();
         System.out.println("Finished");
     }
