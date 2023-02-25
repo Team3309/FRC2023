@@ -94,6 +94,9 @@ public final class Constants {
         /******** Gear Ratios ********/
         public static final double JOINT_A_MOTOR_GEAR_RATIO = 1.0;
         public static final double JOINT_B_MOTOR_GEAR_RATIO = 1.0;
+        
+        /******** Misc ********/
+        public static final double TargetThreshold = 10;
     }
 
     /*
