@@ -159,7 +159,11 @@ gradle-app.setting
 bin/
 
 # IntelliJ
-/.idea/
+.idea/*
+!.idea/codeStyles
+.idea/codeStyles/*
+!.idea/codeStyles/Project.xml
+
 
 # Simulation GUI and other tools window save file
 *-window.json

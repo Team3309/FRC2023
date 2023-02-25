@@ -22,46 +22,49 @@ import frc.robot.commands.drive.AutoBalance;
 
 
 /**
-* This class is where the bulk of the robot should be declared. Since Command-based is a
-* "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
-* periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
-* subsystems, commands, and trigger mappings) should be declared here.
-*/
-public class RobotContainer {
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
+ */
+public class RobotContainer
+{
     // The robot's subsystems and commands are defined here...
     private final ArmSubsystem arm = new ArmSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem();
     private final ClampSubsystem clamp = new ClampSubsystem();
-    
 
-    
-    
+
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-    
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
-        boolean toggle = false;
-        // sends the autos to the dashboard
+
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer()
+    {
+        // -- Sends the autos to the dashboard
         autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
-        autoChooser.addOption("Testpath",(Command) new FollowTrajectory(drive, "Testpath", true));
-        autoChooser.addOption("CurveTestPath",new FollowTrajectory(drive, "CurveTestPath", true));
+        autoChooser.addOption("Testpath", new FollowTrajectory(drive, "Testpath", true));
+        autoChooser.addOption("CurveTestPath", new FollowTrajectory(drive, "CurveTestPath", true));
         autoChooser.addOption("AutoBalancePath", new AutoBalancePath(drive));
         SmartDashboard.putData(autoChooser);
-        // Configure the trigger bindings
+        
+        // -- Configure the trigger bindings
         configureBindings();
         setDefaultCommands();
     }
 
     /**
-    * Use this method to define your trigger->command mappings. Triggers can be created via the
-    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-    * predicate, or via the named factories in {@link
-    * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-    * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-    * joysticks}.
-    */  
-    private void configureBindings() {
+     * Use this method to define your trigger->command mappings. Triggers can be created via the
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+     * predicate, or via the named factories in {@link
+     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * joysticks}.
+     */
+    private void configureBindings()
+    {
         //Re-zeros the gyro 
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
 
@@ -80,23 +83,20 @@ public class RobotContainer {
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
-
-
-        
-
     }
-    
-    private void setDefaultCommands() {
+
+    private void setDefaultCommands()
+    {
         drive.setDefaultCommand(new DriveTeleop(drive));
-    } 
-    
+    }
+
     /**
-    * Use this to pass the autonomous command to the main {@link Robot} class.
-    *
-    * @return the command to run in autonomous
-    */
-    public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand()
+    {
         return autoChooser.getSelected();
     }
 }
