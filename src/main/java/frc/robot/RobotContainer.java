@@ -18,7 +18,6 @@ import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClampSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.commands.drive.AutoBalance;
 
 
 /**
@@ -79,7 +78,7 @@ public class RobotContainer
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
-         new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
+         //new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));

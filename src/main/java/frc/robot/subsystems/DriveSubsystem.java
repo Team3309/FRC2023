@@ -1,6 +1,7 @@
 /*Shouldn't need major changes */
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -157,5 +158,63 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot heading", IMU.getRobotYaw().getDegrees());
         SmartDashboard.putNumber("Meters to target", LimelightVision.getMetersFromTarget());
+    }
+
+
+
+
+    // -------------------------------------------------------------------------------------------------------------------------------------
+    // -- Commands
+    // -------------------------------------------------------------------------------------------------------------------------------------
+    public Command AutoBalanceCommand()
+    {
+        return   DriveStraightCommand(1)
+                    .raceWith( UntilFallingCommand() )
+                .andThen(DriveStraightCommand(-2))
+                    .withTimeout(0.5)
+                .andThen(BalanceCommand());
+    }
+
+    public Command DriveStraightCommand(double metersPerSecond)
+    {
+        return run( () -> setChassisSpeeds(new ChassisSpeeds(metersPerSecond, 0, 0)) );
+    }
+
+
+
+    // -------------------------------------------------------------------------------------------------------------------------------------
+    // -- Internal Commands
+    // -------------------------------------------------------------------------------------------------------------------------------------
+    private Command UntilFallingCommand()
+    {
+        return Commands.sequence(
+                Commands.waitUntil( () -> IMU.getRobotRoll().getDegrees() > CHARGE_STATION_TILT_ANGLE + CHARGE_STATION_TILT_ANGLE_THRESHOLD),
+                Commands.waitUntil( () -> IMU.getRobotRoll().getDegrees() < CHARGE_STATION_TILT_ANGLE)
+        );
+    }
+
+    private Command BalanceCommand()
+    {
+        LinearFilter filter = LinearFilter.singlePoleIIR(0.15, 0.02);
+
+        return run(() -> {
+            double currentAngle = IMU.getRobotRoll().getDegrees(); //TODO Change this to pitch when IMU is oriented correctly
+            double filteredAngle = filter.calculate(currentAngle);
+
+            double desiredSpeed = Math.min(Constants.Drive.CHARGE_STATION_DRIVE_KP * filteredAngle, 1);
+            double finalSpeed = Math.min(Math.max(desiredSpeed, -0.5), 0.5);
+
+            setChassisSpeeds(new ChassisSpeeds(finalSpeed, 0, 0));
+
+            String output = String.format("Speed: %.2f %.2f \t Error: %.2f %.2f \t Angle: %.2f",
+                    desiredSpeed,
+                    finalSpeed,
+                    currentAngle,
+                    filteredAngle);
+
+            System.out.println(output);
+        });
+
+
     }
 }
