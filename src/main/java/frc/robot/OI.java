@@ -15,8 +15,8 @@ public class OI {
 
     public static JoystickClusterGroup leftStickLeftCluster = new JoystickClusterGroup(leftStick, JoystickClusterGroup.Side.left);
     public static JoystickClusterGroup leftStickRightCluster = new JoystickClusterGroup(leftStick, JoystickClusterGroup.Side.right);
-    public static JoystickClusterGroup rightStickLeftCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.right);
-    public static JoystickClusterGroup rightStickRightCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.left);
+    public static JoystickClusterGroup rightStickLeftCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.left);
+    public static JoystickClusterGroup rightStickRightCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.right);
 
     // Xbox controller
     public static XboxController3309 operatorController = new XboxController3309(2, Constants.XBOX_DEADBAND);

@@ -21,6 +21,9 @@ import frc.robot.LimelightVision;
 import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
+
 import static frc.robot.Constants.Drive.*;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -114,11 +117,28 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Set the odometry readings
+     * Resets the odometry without resetting the IMU
+     */
+    public void ResetOdometry()
+    {
+        swerveOdometry.resetPosition(
+            IMU.getRobotYaw(),
+            new SwerveModulePosition[] {
+                    frontLeftModule.getPosition(),
+                    frontRightModule.getPosition(),
+                    backLeftModule.getPosition(),
+                    backRightModule.getPosition()
+            },
+            new Pose2d()
+        );
+    }
+
+    /**
+     * Set the odometry, swerve modules, and IMU readings
      * 
      * @param pose Pose to be written to odometry
      */
-    public void resetOdometry (Pose2d pose) {
+    public void HardResetOdometry(Pose2d pose) {
         IMU.tareIMU(pose.getRotation());
         frontLeftModule.zeroPosition();
         frontRightModule.zeroPosition();
@@ -159,6 +179,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot heading", IMU.getRobotYaw().getDegrees());
         SmartDashboard.putNumber("Meters to target", LimelightVision.getMetersFromTarget());
+        SmartDashboard.putNumber("Pose X", currentRobotPose.getX());
+        SmartDashboard.putNumber("Roll", IMU.getRobotRoll().getDegrees());
     }
 
 
@@ -169,11 +191,20 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     public Command AutoBalanceCommand()
     {
-        return  DriveStraightCommand(1.25).raceWith( UntilFallingCommand() )
+        return  DriveStraightCommand(1.25).raceWith( UntilRisingThenFallingCommand() )
                 .andThen(DriveStraightCommand(-3).withTimeout(0.35))
                 .andThen(new PrintCommand("Balance"))
                 //.andThen(BalanceCommand())
         ;
+    }
+
+    public Command AutoBalanceSimpleCommand()
+    {
+        return  DriveDistance(1.5, 1.5)
+                .andThen(DriveDistance(0.5, 1).until(IsFallingSupplier()))
+                .andThen(new PrintCommand("falling"))
+                ;
+
     }
 
     public Command DriveStraightCommand(double metersPerSecond)
@@ -182,12 +213,19 @@ public class DriveSubsystem extends SubsystemBase {
                 .beforeStarting(new PrintCommand("Drive Straight " + metersPerSecond));
     }
 
+    public Command DriveDistance(double metersPerSecond, double distanceInMeters)
+    {
+        final AtomicReference<Pose2d> startingPose = new AtomicReference<>(); // wrapper to allow us to change captured object inside a lambda
 
+        return DriveStraightCommand(metersPerSecond)
+                .until(() -> currentRobotPose.getX() > startingPose.get().getX() + distanceInMeters)
+                .beforeStarting(() -> startingPose.set(currentRobotPose));
+    }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private Command UntilFallingCommand()
+    private Command UntilRisingThenFallingCommand()
     {
         return Commands.sequence(
                 Commands.print("Waiting to rise"),
@@ -195,6 +233,20 @@ public class DriveSubsystem extends SubsystemBase {
                 Commands.print("Waiting to fall"),
                 Commands.waitUntil( () -> IMU.getRobotRoll().getDegrees() < CHARGE_STATION_TILT_ANGLE)
         );
+    }
+
+    private BooleanSupplier IsFallingSupplier()
+    {
+        // TODO: Filter needs to be initialized to the current value so it doesn't ramp up from zero
+        LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        return () -> {
+            double current = IMU.getRobotRoll().getDegrees();
+            double filtered = filter.calculate(current);
+
+            SmartDashboard.putNumberArray("falling", new double[]{current, filtered});
+
+            return filtered < CHARGE_STATION_TILT_ANGLE;
+        };
     }
 
     private Command BalanceCommand()

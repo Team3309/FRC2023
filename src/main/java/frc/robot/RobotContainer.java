@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -78,7 +79,10 @@ public class RobotContainer
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
-         new Trigger(OI.rightStick::getTrigger).whileTrue(drive.AutoBalanceCommand());
+         new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
+
+         //Reset Odometry
+        new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(drive::ResetOdometry));
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));

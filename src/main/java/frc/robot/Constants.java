@@ -77,7 +77,7 @@ public final class Constants {
         public static final double CHARGE_STATION_ANGLE_TRESHOLD_DEGREES = 3;
         public static final double CHARGE_STATION_DRIVE_KP = 0.06;
 
-        public static final double CHARGE_STATION_TILT_ANGLE = 12.5;
+        public static final double CHARGE_STATION_TILT_ANGLE = 12;
 
         public static final double CHARGE_STATION_TILT_ANGLE_THRESHOLD = 0.5;
 

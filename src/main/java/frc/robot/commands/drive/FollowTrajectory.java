@@ -76,7 +76,7 @@ public class FollowTrajectory extends CommandBase {
         PathPlannerState initialState = (PathPlannerState) trajectory.sample(0);
 
         if (resetOdometry) {
-            drive.resetOdometry(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation)); // Re-zero the robot's odometry
+            drive.HardResetOdometry(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation)); // Re-zero the robot's odometry
         }
 
         timer.reset();
