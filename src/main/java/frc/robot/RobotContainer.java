@@ -78,7 +78,7 @@ public class RobotContainer
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
-         //new Trigger(OI.rightStick::getTrigger).whileTrue(new AutoBalance(drive));
+         new Trigger(OI.rightStick::getTrigger).whileTrue(drive.AutoBalanceCommand());
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
@@ -99,4 +99,5 @@ public class RobotContainer
         return autoChooser.getSelected();
     }
 }
-                
+
+
