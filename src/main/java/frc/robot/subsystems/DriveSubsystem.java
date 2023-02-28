@@ -200,11 +200,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     public Command AutoBalanceSimpleCommand()
     {
-        return  DriveDistance(1.5, 1.5)
-                .andThen(DriveDistance(0.5, 1).until(IsFallingSupplier()))
-                .andThen(new PrintCommand("falling"))
-                ;
-
+        return Commands.sequence(
+              DriveDistance(1.5, 1.5)
+            , DriveDistance(0.5, 1)
+                  .until(IsFallingSupplier())
+            , Commands.print("falling")
+        );
     }
 
     public Command DriveStraightCommand(double metersPerSecond)
@@ -237,13 +238,22 @@ public class DriveSubsystem extends SubsystemBase {
 
     private BooleanSupplier IsFallingSupplier()
     {
-        // TODO: Filter needs to be initialized to the current value so it doesn't ramp up from zero
-        LinearFilter filter = LinearFilter.singlePoleIIR(0.1, 0.02);
-        return () -> {
+        final int numSamples = 5;
+        LinearFilter filter = LinearFilter.movingAverage(numSamples);
+     
+        // -- Pre-fill the filter's samples with the current angle so we don't average up from zero
+        double angle = IMU.getRobotRoll().getDegrees();
+        for (int i = 0; i < numSamples; i++)
+        {
+            filter.calculate(angle);
+        }
+        
+        return () ->
+        {
             double current = IMU.getRobotRoll().getDegrees();
             double filtered = filter.calculate(current);
 
-            SmartDashboard.putNumberArray("falling", new double[]{current, filtered});
+            SmartDashboard.putNumberArray("falling", new double[]{ current, filtered } );
 
             return filtered < CHARGE_STATION_TILT_ANGLE;
         };
