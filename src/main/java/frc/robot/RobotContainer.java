@@ -79,7 +79,7 @@ public class RobotContainer
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         //AutoBalance
-         new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
+        new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
 
          //Reset Odometry
         new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(drive::ResetOdometry));

@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -179,8 +180,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot heading", IMU.getRobotYaw().getDegrees());
         SmartDashboard.putNumber("Meters to target", LimelightVision.getMetersFromTarget());
-        SmartDashboard.putNumber("Pose X", currentRobotPose.getX());
-        SmartDashboard.putNumber("Roll", IMU.getRobotRoll().getDegrees());
     }
 
 
@@ -189,100 +188,67 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public Command AutoBalanceCommand()
-    {
-        return  DriveStraightCommand(1.25).raceWith( UntilRisingThenFallingCommand() )
-                .andThen(DriveStraightCommand(-3).withTimeout(0.35))
-                .andThen(new PrintCommand("Balance"))
-                //.andThen(BalanceCommand())
-        ;
-    }
-
     public Command AutoBalanceSimpleCommand()
     {
         return Commands.sequence(
-              DriveDistance(1.5, 1.5)
-            , DriveDistance(0.5, 1)
-                  .until(IsFallingSupplier())
-            , Commands.print("falling")
+              DriveDistance(1.75, 1.45)
+            , DriveDistance(0.75, 0.2)
+            , DriveDistance(0.5, 1.5).raceWith(WaitUntilFallingCommand())
+            , DriveDistance(-0.5, 0.03)
+            //, Commands.print(System.currentTimeMillis() + " Done")
         );
     }
 
     public Command DriveStraightCommand(double metersPerSecond)
     {
         return run( () -> setChassisSpeeds(new ChassisSpeeds(metersPerSecond, 0, 0)) )
-                .beforeStarting(new PrintCommand("Drive Straight " + metersPerSecond));
+                .beforeStarting(new PrintCommand(System.currentTimeMillis() + "  Drive Straight " + metersPerSecond));
     }
 
     public Command DriveDistance(double metersPerSecond, double distanceInMeters)
     {
         final AtomicReference<Pose2d> startingPose = new AtomicReference<>(); // wrapper to allow us to change captured object inside a lambda
 
-        return DriveStraightCommand(metersPerSecond)
-                .until(() -> currentRobotPose.getX() > startingPose.get().getX() + distanceInMeters)
-                .beforeStarting(() -> startingPose.set(currentRobotPose));
+        return Commands.sequence(
+                  runOnce(() -> startingPose.set(currentRobotPose))
+                , DriveStraightCommand(metersPerSecond)
+                        .until(() -> {
+                            if (metersPerSecond > 0)
+                            {
+                                return currentRobotPose.getX() > startingPose.get().getX() + distanceInMeters;
+                            }
+                            return currentRobotPose.getX() < startingPose.get().getX() - distanceInMeters;
+                        })
+        );
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private Command UntilRisingThenFallingCommand()
+    private Command WaitUntilFallingCommand()
     {
+        final int numSamples = 8;
+        AtomicReference<LinearFilter> filter = new AtomicReference<>();
+
         return Commands.sequence(
-                Commands.print("Waiting to rise"),
-                Commands.waitUntil( () -> IMU.getRobotRoll().getDegrees() > CHARGE_STATION_TILT_ANGLE + CHARGE_STATION_TILT_ANGLE_THRESHOLD ),
-                Commands.print("Waiting to fall"),
-                Commands.waitUntil( () -> IMU.getRobotRoll().getDegrees() < CHARGE_STATION_TILT_ANGLE)
+                // -- Create a new filter and initialize the values to the current angle
+                Commands.runOnce( () ->
+                {
+                    double angle = IMU.getRobotRoll().getDegrees();
+                    filter.set(LinearFilter.movingAverage(numSamples));
+                    for (int i = 0; i < numSamples; i++)
+                    {
+                        filter.get().calculate(angle);
+                    }
+                })
+                // -- Use the filter to figure out when we start falling for real
+                , Commands.waitUntil(() ->
+                {
+                    double current = IMU.getRobotRoll().getDegrees();
+                    double filtered = filter.get().calculate(current);
+                    //System.out.printf("%d %.2f  |  %.2f%n", System.currentTimeMillis(), current, filtered);
+                    return filtered < CHARGE_STATION_TILT_ANGLE;
+                })
         );
-    }
-
-    private BooleanSupplier IsFallingSupplier()
-    {
-        final int numSamples = 5;
-        LinearFilter filter = LinearFilter.movingAverage(numSamples);
-     
-        // -- Pre-fill the filter's samples with the current angle so we don't average up from zero
-        double angle = IMU.getRobotRoll().getDegrees();
-        for (int i = 0; i < numSamples; i++)
-        {
-            filter.calculate(angle);
-        }
-        
-        return () ->
-        {
-            double current = IMU.getRobotRoll().getDegrees();
-            double filtered = filter.calculate(current);
-
-            SmartDashboard.putNumberArray("falling", new double[]{ current, filtered } );
-
-            return filtered < CHARGE_STATION_TILT_ANGLE;
-        };
-    }
-
-    private Command BalanceCommand()
-    {
-        LinearFilter filter = LinearFilter.singlePoleIIR(0.04, 0.02);
-
-        return run(() -> {
-            double currentAngle = IMU.getRobotRoll().getDegrees(); //TODO Change this to pitch when IMU is oriented correctly
-            double filteredAngle = filter.calculate(currentAngle);
-
-            double desiredSpeed = Math.min(Constants.Drive.CHARGE_STATION_DRIVE_KP * (filteredAngle - 3), 1);
-
-            double maxSpeed = 1.5;
-            double finalSpeed = Math.min(Math.max(desiredSpeed, -maxSpeed), maxSpeed);
-
-            setChassisSpeeds(new ChassisSpeeds(finalSpeed, 0, 0));
-
-            String output = String.format("Speed: %.2f %.2f \t Angle: %.2f %.2f",
-                    desiredSpeed,
-                    finalSpeed,
-                    currentAngle,
-                    filteredAngle);
-
-            System.out.println(output);
-        });
-
-
     }
 }
