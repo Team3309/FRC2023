@@ -17,7 +17,6 @@ import frc.robot.commands.drive.DriveTeleop;
 import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ClampSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 
@@ -32,8 +31,6 @@ public class RobotContainer
     // The robot's subsystems and commands are defined here...
     private final ArmSubsystem arm = new ArmSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem();
-    private final ClampSubsystem clamp = new ClampSubsystem();
-
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -63,26 +60,34 @@ public class RobotContainer
      * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
      * joysticks}.
      */
-    private void configureBindings()
+    private void configureBindings() //TODO change bindings
     {
-        //Re-zeros the gyro 
-        new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
+        // ----------------------------------------------------------------------------------------
+        // -- Driver
+        // ----------------------------------------------------------------------------------------
 
-        //Intake
-        //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
+        // -- Clamp
+        //new Trigger(OI.rightStick::getTrigger).onTrue();
+        //new Trigger(OI.rightStick::getTop).onTrue();
 
-        //vision
+        // -- Auto Turn
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
 
-        new Trigger(OI.rightStick::getTop).onTrue(LimelightVision.SetPipelineCommand(0));
 
-        //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
+
+        // ----------------------------------------------------------------------------------------
+        // -- Operator
+        // ----------------------------------------------------------------------------------------
+
+        // -- Intake
+        //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
         //AutoBalance
         new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
 
-         //Reset Odometry
-        new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(drive::ResetOdometry));
+        // -- Vision
+        //new Trigger(OI.rightStick::getTop).onTrue(LimelightVision.SetPipelineCommand(0));
+        //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
         // //Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));

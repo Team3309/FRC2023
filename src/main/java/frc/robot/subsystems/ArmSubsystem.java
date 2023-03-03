@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -131,6 +132,8 @@ public class ArmSubsystem extends SubsystemBase
 
     private ArmPosition DesiredPosition;
     private ArmDirection DesiredDirection;
+    private final Solenoid ClampSolenoid;
+
 
     public ArmSubsystem() {
         UpperMotor = new WPI_TalonFX(Constants.Arm.JOINT_A_MOTOR_ID);
@@ -138,6 +141,12 @@ public class ArmSubsystem extends SubsystemBase
         
         Constants.Arm.MOTOR_A_PID_GAINS.configureMotorPID(UpperMotor);
         Constants.Arm.MOTOR_B_PID_GAINS.configureMotorPID(LowerMotor);
+
+        ClampSolenoid = new Solenoid(
+                Constants.PCM_CAN_ID,
+                Constants.PCM_TYPE,
+                Constants.Arm.CLAMP_SOLENOID_ID
+        );
     }
 
 
@@ -209,6 +218,11 @@ public class ArmSubsystem extends SubsystemBase
                     DesiredPosition = position;
                     DesiredDirection = direction;
                 });
+    }
+
+    public Command ActuateClamp(boolean open)
+    {
+        return runOnce( () -> ClampSolenoid.set(!open) );
     }
 
 
