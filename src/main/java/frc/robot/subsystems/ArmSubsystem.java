@@ -148,6 +148,9 @@ public class ArmSubsystem extends SubsystemBase
                 Constants.Arm.CLAMP_SOLENOID_ID
         );
     }
+    public void setClamp (boolean open) {
+        ClampSolenoid.set(open);
+    }
 
 
     /**
@@ -220,11 +223,15 @@ public class ArmSubsystem extends SubsystemBase
                 });
     }
 
-    public Command ActuateClamp(boolean open)
-    {
-        return runOnce( () -> ClampSolenoid.set(!open) );
-    }
+//    public Command ActuateClamp(boolean close)
+//    {
+//        return runOnce( () -> ClampSolenoid.set(close) );
+//    }
 
+    public Command ToggleClamp()
+    {
+        return runOnce(ClampSolenoid::toggle);
+    }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
