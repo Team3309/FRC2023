@@ -4,13 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.auto.autos.AutoBalancePath;
 import frc.robot.commands.drive.DriveTeleop;
@@ -18,6 +17,8 @@ import frc.robot.commands.drive.FollowTrajectory;
 import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+
+import java.util.HashMap;
 
 
 /**
@@ -28,39 +29,31 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer
 {
-    // The robot's subsystems and commands are defined here...
-    private final ArmSubsystem arm = new ArmSubsystem();
-    private final DriveSubsystem drive = new DriveSubsystem();
+    // -- Subsystems
+    private final ArmSubsystem Arm = new ArmSubsystem();
+    private final DriveSubsystem Drive = new DriveSubsystem();
 
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    // -- Auto
+    private SwerveAutoBuilder AutoBuilder = null;
+    private final SendableChooser<Command> AutoChooser = new SendableChooser<>();
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
+
     public RobotContainer()
     {
-        // -- Sends the autos to the dashboard
-        autoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
-        autoChooser.addOption("Testpath", new FollowTrajectory(drive, "Testpath", true));
-        autoChooser.addOption("CurveTestPath", new FollowTrajectory(drive, "CurveTestPath", true));
-        autoChooser.addOption("AutoBalancePath", new AutoBalancePath(drive));
-        SmartDashboard.putData(autoChooser);
-        
-        // -- Configure the trigger bindings
-        configureBindings();
-        setDefaultCommands();
+        ConfigureBindings();
+        SetDefaultCommands();
+        ConfigureSwerveAutoBuilder();
+        ConfigureAutoCommands();
     }
 
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-     * predicate, or via the named factories in {@link
-     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-     * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-     * joysticks}.
-     */
-    private void configureBindings() //TODO change bindings
+
+    public Command GetAutonomousCommand()
+    {
+        return AutoChooser.getSelected();
+    }
+
+
+    private void ConfigureBindings() //TODO change bindings
     {
         // ----------------------------------------------------------------------------------------
         // -- Driver
@@ -71,7 +64,7 @@ public class RobotContainer
         //new Trigger(OI.rightStick::getTop).onTrue();
 
         // -- Auto Turn
-        new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(drive));
+        new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(Drive));
 
 
 
@@ -83,7 +76,7 @@ public class RobotContainer
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
         // -- AutoBalance
-        new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
+        new Trigger(OI.rightStick::getTrigger).onTrue(Drive.AutoBalanceCommand());
 
         // -- Vision
         //new Trigger(OI.rightStick::getTop).onTrue(LimelightVision.SetPipelineCommand(0));
@@ -93,26 +86,64 @@ public class RobotContainer
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
 
         // -- Reset Odometry
-        new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(drive::ResetOdometry));
+        new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(Drive::ResetOdometry));
 
         // -- Re-zeros the gyro
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
     }
 
-    private void setDefaultCommands()
+
+    private void SetDefaultCommands()
     {
-        drive.setDefaultCommand(new DriveTeleop(drive));
+        Drive.setDefaultCommand(new DriveTeleop(Drive));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand()
+
+    private void ConfigureSwerveAutoBuilder()
     {
-        return autoChooser.getSelected();
+        // -- Map Path Planner events to Commands
+        HashMap<String, Command> eventMap = new HashMap<>();
+
+        eventMap.put("BalanceForward", Drive.AutoBalanceCommand());
+
+        eventMap.put("Arm_ScoreTop_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_PickupFloor_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.PickupFloor, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_PickupFloor_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.PickupFloor, ArmSubsystem.ArmDirection.Backward));
+
+        eventMap.put("Clamp_Close", Arm.ActuateClamp(true));
+        eventMap.put("Clamp_Open", Arm.ActuateClamp(false));
+
+        // -- Builder
+        AutoBuilder = new SwerveAutoBuilder(
+                Drive::GetPose, // Pose2d supplier
+                Drive::HardResetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+                Drive.GetKinematics(), // SwerveDriveKinematics
+                Constants.Drive.HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS, // PID constants to correct for translation error (used to create the X and Y PID controllers)
+                Constants.Drive.HOLONOMIC_CONTROLLER_PID_ROTATIONAL_CONSTRAINTS, // PID constants to correct for rotation error (used to create the rotation controller)
+                Drive::setModuleStates, // Module states consumer used to output to the drive subsystem
+                eventMap,
+                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                Drive // The drive subsystem. Used to properly set the requirements of path following commands
+        );
     }
+
+    private Command GetPathPlannerAutoCommand(String name)
+    {
+        return AutoBuilder.fullAuto(PathPlanner.loadPathGroup(name, new PathConstraints(4, 3)));
+    }
+
+    private void ConfigureAutoCommands()
+    {
+        AutoChooser.setDefaultOption("No auto", new WaitUntilCommand(0));
+
+        AutoChooser.addOption("Testpath", new FollowTrajectory(Drive, "Testpath", true));
+        AutoChooser.addOption("CurveTestPath", new FollowTrajectory(Drive, "CurveTestPath", true));
+        AutoChooser.addOption("AutoBalancePath", new AutoBalancePath(Drive));
+        AutoChooser.addOption("Coop And Engage", GetPathPlannerAutoCommand("Coop&Engage"));
+
+        SmartDashboard.putData(AutoChooser);
+    }
+
 }
 
 

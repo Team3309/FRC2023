@@ -90,14 +90,14 @@ public class FollowTrajectory extends CommandBase {
 
         //Use the holonomic drive controller to calculate the required chassis speeds to follow the trajectory
         drive.setChassisSpeeds(holonomicController.calculate(
-            drive.getRobotPose(), 
+            drive.GetPose(),
             goal, 
             goal.holonomicRotation
         ));
         
-        SmartDashboard.putString("Holonomic controller error", drive.getRobotPose().minus(goal.poseMeters).toString());
-        SmartDashboard.putNumber("Holonomic x error",  drive.getRobotPose().minus(goal.poseMeters).getTranslation().getX());
-        SmartDashboard.putNumber("Holonomic y error",  drive.getRobotPose().minus(goal.poseMeters).getTranslation().getY());
+        SmartDashboard.putString("Holonomic controller error", drive.GetPose().minus(goal.poseMeters).toString());
+        SmartDashboard.putNumber("Holonomic x error",  drive.GetPose().minus(goal.poseMeters).getTranslation().getX());
+        SmartDashboard.putNumber("Holonomic y error",  drive.GetPose().minus(goal.poseMeters).getTranslation().getY());
         SmartDashboard.putNumber("Holonomic theta target", goal.holonomicRotation.getDegrees());
         SmartDashboard.putNumber("Holonomic theta error", Constants.Drive.HOLONOMIC_CONTROLLER_PID_THETA.getPositionError());
 

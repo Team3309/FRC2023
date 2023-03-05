@@ -4,13 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Swerve.SwerveCANIDs;
 import friarLib2.utility.PIDParameters;
 
@@ -60,9 +59,11 @@ public final class Constants {
         public static final double MAX_AUTON_ANGULAR_ACCELERATION = 200; // Degrees/second squared
         
         /********** Holonomic Controller Gains **********/
-        public static final PIDController HOLONOMIC_CONTROLLER_PID_X = new PIDController(4, .75,0.5); //9, 3, 0
-        public static final PIDController HOLONOMIC_CONTROLLER_PID_Y = new PIDController(4, .75,0.5);
-        public static final ProfiledPIDController HOLONOMIC_CONTROLLER_PID_THETA = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(MAX_AUTON_ANGULAR_SPEED, MAX_AUTON_ANGULAR_ACCELERATION));
+        public static final PIDConstants HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS = new PIDConstants(4, .75,0.5);
+        public static final PIDConstants HOLONOMIC_CONTROLLER_PID_ROTATIONAL_CONSTRAINTS = new PIDConstants(5, 0,0);
+        public static final PIDController HOLONOMIC_CONTROLLER_PID_X = new PIDController(HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kP, HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kI,HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kD);
+        public static final PIDController HOLONOMIC_CONTROLLER_PID_Y = new PIDController(HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kP, HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kI,HOLONOMIC_CONTROLLER_PID_XY_CONSTRAINTS.kD);
+        public static final ProfiledPIDController HOLONOMIC_CONTROLLER_PID_THETA = new ProfiledPIDController(HOLONOMIC_CONTROLLER_PID_ROTATIONAL_CONSTRAINTS.period, HOLONOMIC_CONTROLLER_PID_ROTATIONAL_CONSTRAINTS.kI, HOLONOMIC_CONTROLLER_PID_ROTATIONAL_CONSTRAINTS.period, new TrapezoidProfile.Constraints(MAX_AUTON_ANGULAR_SPEED, MAX_AUTON_ANGULAR_ACCELERATION));
         
         /******** PID Gains ********/
         public static final PIDController VISION_AIM_PID = new PIDController(0.3, 0, 0);
@@ -88,8 +89,8 @@ public final class Constants {
      */
     public static class Arm {
         /********** CAN ID's **********/
-        public static final int JOINT_A_MOTOR_ID = 9;
-        public static final int JOINT_B_MOTOR_ID = 10;
+        public static final int AB_MOTOR_ID = 9;
+        public static final int BC_MOTOR_ID = 10;
         
         /******** PID Gains ********/
         public static final PIDParameters MOTOR_A_PID_GAINS = new PIDParameters(0, 0, 0, "Joint A Motor PID");

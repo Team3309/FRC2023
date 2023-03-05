@@ -33,7 +33,7 @@ public class ArmSubsystem extends SubsystemBase
 
     public enum ArmDirection {
         Forward,
-        Backwards,
+        Backward,
     }
     
     private static class ArmPose {
@@ -136,8 +136,8 @@ public class ArmSubsystem extends SubsystemBase
 
 
     public ArmSubsystem() {
-        UpperMotor = new WPI_TalonFX(Constants.Arm.JOINT_A_MOTOR_ID);
-        LowerMotor = new WPI_TalonFX(Constants.Arm.JOINT_B_MOTOR_ID);
+        UpperMotor = new WPI_TalonFX(Constants.Arm.AB_MOTOR_ID);
+        LowerMotor = new WPI_TalonFX(Constants.Arm.BC_MOTOR_ID);
         
         Constants.Arm.MOTOR_A_PID_GAINS.configureMotorPID(UpperMotor);
         Constants.Arm.MOTOR_B_PID_GAINS.configureMotorPID(LowerMotor);
@@ -148,10 +148,6 @@ public class ArmSubsystem extends SubsystemBase
                 Constants.Arm.CLAMP_SOLENOID_ID
         );
     }
-    public void setClamp (boolean open) {
-        ClampSolenoid.set(open);
-    }
-
 
     /**
      * Calculates if moving to a pose will cause the upper arm to pass through the robot, thus requiring the lower arm to be stowed.
@@ -168,7 +164,7 @@ public class ArmSubsystem extends SubsystemBase
         if (currentPosition < StowAngleFront)
             currentDirection = ArmDirection.Forward;
         else if (currentPosition > StowAngleBack)
-            currentDirection = ArmDirection.Backwards;
+            currentDirection = ArmDirection.Backward;
         else
             return true;
         
@@ -176,7 +172,7 @@ public class ArmSubsystem extends SubsystemBase
         if (targetPosition < StowAngleFront)
             targetDirection = ArmDirection.Forward;
         else if (targetPosition >  StowAngleBack)
-            targetDirection = ArmDirection.Backwards;
+            targetDirection = ArmDirection.Backward;
         else
             return true;
 
@@ -223,10 +219,7 @@ public class ArmSubsystem extends SubsystemBase
                 });
     }
 
-//    public Command ActuateClamp(boolean close)
-//    {
-//        return runOnce( () -> ClampSolenoid.set(close) );
-//    }
+    public Command ActuateClamp(boolean close) { return runOnce( () -> ClampSolenoid.set(!close) ); }
 
     public Command ToggleClamp()
     {

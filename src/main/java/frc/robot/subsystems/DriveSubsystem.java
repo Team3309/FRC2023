@@ -9,21 +9,18 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.IMU;
 import frc.robot.LimelightVision;
 import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BooleanSupplier;
 
 import static frc.robot.Constants.Drive.*;
 
@@ -113,9 +110,10 @@ public class DriveSubsystem extends SubsystemBase {
      * 
      * @return Current robot pose
      */
-    public Pose2d getRobotPose () {
+    public Pose2d GetPose() {
         return currentRobotPose;
     }
+    public SwerveDriveKinematics GetKinematics() { return swerveKinematics; }
 
     /**
      * Resets the odometry without resetting the IMU
@@ -188,14 +186,13 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public Command AutoBalanceSimpleCommand()
+    public Command AutoBalanceCommand()
     {
         return Commands.sequence(
               DriveDistance(1.75, 1.45)
             , DriveDistance(0.75, 0.2)
             , DriveDistance(0.5, 1.5).raceWith(WaitUntilFallingCommand())
             , DriveDistance(-0.5, 0.03)
-            //, Commands.print(System.currentTimeMillis() + " Done")
         );
     }
 
