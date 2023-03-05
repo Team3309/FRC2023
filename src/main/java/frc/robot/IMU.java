@@ -6,11 +6,12 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
- * Contains static references to the robot's internal measurement
- * unit and related methods.
+ * Contains static references to the robot's internal measurement unit and related methods.
  */
 public class IMU {
-    // We're using a Pigeon 1.0 because we have a bunch floating around from previous robots
+
+    // -- We're using a Pigeon 1.0 because we have a bunch floating around from previous robots
+    //    The Pigeon 1 should be mounted Y-FORWARD
     public static PigeonIMU imu = new PigeonIMU(Constants.PIGEON_IMU_ID);
 
     /**

@@ -82,15 +82,21 @@ public class RobotContainer
         // -- Intake
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
-        //AutoBalance
+        // -- AutoBalance
         new Trigger(OI.rightStick::getTrigger).onTrue(drive.AutoBalanceSimpleCommand());
 
         // -- Vision
         //new Trigger(OI.rightStick::getTop).onTrue(LimelightVision.SetPipelineCommand(0));
         //new Trigger(OI.rightStick::get).onTrue(ApriltagVision.SetPipelineCommand(1));
 
-        // //Turntable
+        // -- Turntable
         // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
+
+        // -- Reset Odometry
+        new Trigger(OI.rightStickRightCluster::get).onTrue(Commands.runOnce(drive::ResetOdometry));
+
+        // -- Re-zeros the gyro
+        new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
     }
 
     private void setDefaultCommands()
