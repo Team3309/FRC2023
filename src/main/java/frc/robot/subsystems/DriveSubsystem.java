@@ -234,7 +234,7 @@ public class DriveSubsystem extends SubsystemBase {
                 // -- Create a new filter and initialize the values to the current angle
                 Commands.runOnce( () ->
                 {
-                    double angle = IMU.getRobotRoll().getDegrees();
+                    double angle = IMU.getRobotPitch().getDegrees();
                     filter.set(LinearFilter.movingAverage(numSamples));
                     for (int i = 0; i < numSamples; i++)
                     {
@@ -244,7 +244,7 @@ public class DriveSubsystem extends SubsystemBase {
                 // -- Use the filter to figure out when we start falling for real
                 , Commands.waitUntil(() ->
                 {
-                    double current = IMU.getRobotRoll().getDegrees();
+                    double current = IMU.getRobotPitch().getDegrees();
                     double filtered = filter.get().calculate(current);
                     //System.out.printf("%d %.2f  |  %.2f%n", System.currentTimeMillis(), current, filtered);
                     return filtered < CHARGE_STATION_TILT_ANGLE;

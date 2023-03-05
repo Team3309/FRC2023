@@ -101,12 +101,7 @@ public final class Constants {
         
         /******** Misc ********/
         public static final double TargetThreshold = 10;
-    }
 
-    /*
-     * Constants for the clamp
-     */
-    public static class Clamp {
         /********** Solenoid PCM Ports **********/
         public static final int CLAMP_SOLENOID_ID = 1;
     }
