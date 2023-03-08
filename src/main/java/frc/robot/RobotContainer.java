@@ -107,8 +107,13 @@ public class RobotContainer
         eventMap.put("BalanceForward", Drive.AutoBalanceCommand());
 
         eventMap.put("Arm_ScoreTop_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
-        eventMap.put("Arm_PickupFloor_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.PickupFloor, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_ScoreTop_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_ScoreMid_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_ScoreMid_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_ScoreHybrid_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_PickupHybrid_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Backward));
         eventMap.put("Arm_PickupFloor_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.PickupFloor, ArmSubsystem.ArmDirection.Backward));
+        
 
         eventMap.put("Clamp_Close", Arm.ActuateClamp(true));
         eventMap.put("Clamp_Open", Arm.ActuateClamp(false));
