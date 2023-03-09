@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
+import friarLib2.utility.PIDParameters;
 
 import java.util.Map;
 
@@ -127,21 +130,33 @@ public class ArmSubsystem extends SubsystemBase
     // -- Arm Subsystem
     // -------------------------------------------------------------------------------------------------------------------------------------
 
-    private final WPI_TalonFX UpperMotor;
-    private final WPI_TalonFX LowerMotor;
+    private final boolean AlwaysStow = true;
+    private final WPI_TalonFX Motor_AB;
+    private final WPI_TalonFX Motor_BC;
 
     private ArmPosition DesiredPosition;
     private ArmDirection DesiredDirection;
     private final Solenoid ClampSolenoid;
 
 
-    public ArmSubsystem() {
-        UpperMotor = new WPI_TalonFX(Constants.Arm.AB_MOTOR_ID);
-        LowerMotor = new WPI_TalonFX(Constants.Arm.BC_MOTOR_ID);
+    public ArmSubsystem()
+    {
+        Motor_AB = ConfigureMotor(Constants.Arm.AB_MOTOR_ID,
+                Constants.Arm.JOINT_AB_MOTOR_PID,
+                0.75,
+                35000,
+                -33500,
+                6000,
+                20000);
         
-        Constants.Arm.MOTOR_A_PID_GAINS.configureMotorPID(UpperMotor);
-        Constants.Arm.MOTOR_B_PID_GAINS.configureMotorPID(LowerMotor);
-
+        Motor_BC = ConfigureMotor(Constants.Arm.BC_MOTOR_ID,
+                Constants.Arm.JOINT_BC_MOTOR_PID,
+                1.0,
+                30000,
+                -30000,
+                5000,
+                20000);
+        
         ClampSolenoid = new Solenoid(
                 Constants.PCM_CAN_ID,
                 Constants.PCM_TYPE,
@@ -149,12 +164,69 @@ public class ArmSubsystem extends SubsystemBase
         );
     }
 
+    private WPI_TalonFX ConfigureMotor(
+              int motorId
+            , PIDParameters pidConstants
+            , double peakOutput
+            , double softLimitForward
+            , double softLimitReverse
+            , double acceleration
+            , double cruise)
+    {
+        WPI_TalonFX motor = new WPI_TalonFX(motorId);
+        
+        // --Factory default hardware to prevent unexpected behavior
+        motor.configFactoryDefault();
+
+        // -- Configure Sensor Source for Pirmary PID
+        motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TIMEOUT_MS);
+
+		// -- set deadband to super small 0.001 (0.1 %).
+        //    The default deadband is 0.04 (4 %)
+        motor.configNeutralDeadband(0.001, Constants.TIMEOUT_MS);
+        
+        motor.setSensorPhase(false);
+        motor.setInverted(true);
+
+        // -- Set relevant frame periods to be at least as fast as periodic rate
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.TIMEOUT_MS);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.TIMEOUT_MS);
+
+        // -- Set the peak and nominal outputs
+        motor.configNominalOutputForward(0, Constants.TIMEOUT_MS);
+        motor.configNominalOutputReverse(0, Constants.TIMEOUT_MS);
+        motor.configPeakOutputForward(peakOutput, Constants.TIMEOUT_MS);
+        motor.configPeakOutputReverse(-peakOutput, Constants.TIMEOUT_MS);
+
+        // -- Soft limits
+        motor.configForwardSoftLimitThreshold(softLimitForward);
+        motor.configReverseSoftLimitThreshold(softLimitReverse);
+        motor.configForwardSoftLimitEnable(true);
+        motor.configReverseSoftLimitEnable(true);
+        
+        // -- Motion Magic
+        motor.selectProfileSlot(pidConstants.GetSlotIndex(), 0);
+        motor.config_kF(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
+        motor.config_kP(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
+        motor.config_kI(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
+        motor.config_kD(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
+        
+        // -- Ramp speeds
+        motor.configMotionCruiseVelocity(cruise, Constants.TIMEOUT_MS);
+        motor.configMotionAcceleration(acceleration, Constants.TIMEOUT_MS); // unloaded = 10,000
+
+        // -- Zero the sensor once on robot boot up
+        motor.setSelectedSensorPosition(0, 0, Constants.TIMEOUT_MS);
+        
+        return motor;
+    }
+    
     /**
      * Calculates if moving to a pose will cause the upper arm to pass through the robot, thus requiring the lower arm to be stowed.
      */
     private boolean DoesPoseRequireStowingLowerArm(ArmPose targetPose)
     {
-        double currentPosition = UpperMotor.getActiveTrajectoryPosition();
+        double currentPosition = Motor_AB.getActiveTrajectoryPosition();
         double targetPosition = targetPose.UpperArm;
 
         ArmDirection currentDirection;
@@ -202,13 +274,19 @@ public class ArmSubsystem extends SubsystemBase
     {
         ArmPose pose = GetPose(position, direction);
         
-        Command MoveUpperArm = MoveJointToTargetCommand(UpperMotor, pose.UpperArm);
-        Command MoveLowerArm = MoveJointToTargetCommand(LowerMotor, pose.LowerArm);
+        Command MoveUpperArm = MoveJointToTargetCommand(Motor_AB, pose.UpperArm);
+        Command MoveLowerArm = MoveJointToTargetCommand(Motor_BC, pose.LowerArm);
         
         Command stowSequence = 
                  StowLowerArmCommand()
                 .andThen(MoveUpperArm)
-                .andThen(MoveLowerArm);
+                //.andThen(MoveLowerArm)
+                ;
+
+        if (AlwaysStow)
+        {
+            return stowSequence;
+        }
         
         Command parallelMove = Commands.parallel(MoveUpperArm, MoveLowerArm);
         
@@ -239,6 +317,6 @@ public class ArmSubsystem extends SubsystemBase
     private Command StowLowerArmCommand()
     {
         ArmPose pose = GetPose(ArmPosition.Stowed, ArmDirection.Forward);
-        return MoveJointToTargetCommand(LowerMotor, pose.LowerArm);
+        return MoveJointToTargetCommand(Motor_BC, pose.LowerArm);
     }
 }

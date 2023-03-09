@@ -26,11 +26,13 @@ public class PIDParameters implements Sendable
     
     public PIDParameters (int slotIdx, String sendableName, double p, double i, double d, double f, double iZone)
     {
-        this.P = p;
-        this.I = i;
-        this.D = d;
-        this.F = f;
-        this.IZone = iZone;
+        SlotIndex = slotIdx;
+        P = p;
+        I = i;
+        D = d;
+        F = f;
+        IZone = iZone;
+        
         SmartDashboard.putData(sendableName, this);
     }
 
@@ -64,44 +66,45 @@ public class PIDParameters implements Sendable
 	public void initSendable(SendableBuilder builder)
     {
         builder.setSmartDashboardType("PIDController");
-        builder.addDoubleProperty("p", this::getP, this::setP);
-        builder.addDoubleProperty("i", this::getI, this::setI);
-        builder.addDoubleProperty("d", this::getD, this::setD);
-        builder.addDoubleProperty("f", this::getF, this::setF);
-        builder.addDoubleProperty("iZone", this::getIZone, this::setIZone);
+        builder.addDoubleProperty("p", this::GetP, this::SetP);
+        builder.addDoubleProperty("i", this::GetI, this::SetI);
+        builder.addDoubleProperty("d", this::GetD, this::SetD);
+        builder.addDoubleProperty("f", this::GetF, this::SetF);
+        builder.addDoubleProperty("iZone", this::GetIZone, this::SetIZone);
     }
 
-    public double getP() { return P; }
-    public double getI() { return I; }
-    public double getD() { return D; }
-    public double getF() { return F; }
-    public double getIZone() { return IZone; }
+    public int GetSlotIndex() { return SlotIndex; }
+    public double GetP() { return P; }
+    public double GetI() { return I; }
+    public double GetD() { return D; }
+    public double GetF() { return F; }
+    public double GetIZone() { return IZone; }
 
-    public void setP (double p)
+    public void SetP(double p)
     {
         this.P = p;
         updateMotorPID();
     }
 
-    public void setI (double i)
+    public void SetI(double i)
     {
         this.I = i;
         updateMotorPID();
     }
 
-    public void setD (double d)
+    public void SetD(double d)
     {
         this.D = d;
         updateMotorPID();
     }
 
-    public void setF (double f)
+    public void SetF(double f)
     {
         this.F = f;
         updateMotorPID();
     }
 
-    public void setIZone (double iZone)
+    public void SetIZone(double iZone)
     {
         this.IZone = iZone;
         updateMotorPID();

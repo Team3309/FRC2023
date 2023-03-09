@@ -53,15 +53,15 @@ public class RobotContainer
     }
 
 
-    private void ConfigureBindings() //TODO change bindings
+    private void ConfigureBindings()
     {
         // ----------------------------------------------------------------------------------------
         // -- Driver
         // ----------------------------------------------------------------------------------------
 
         // -- Clamp
-        //new Trigger(OI.rightStick::getTrigger).onTrue();
-        //new Trigger(OI.rightStick::getTop).onTrue();
+        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClamp(true));
+        new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClamp(false));
 
         // -- Auto Turn
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(Drive));
@@ -72,6 +72,15 @@ public class RobotContainer
         // -- Operator
         // ----------------------------------------------------------------------------------------
 
+        // -- Arm
+        new Trigger(OI.operatorController::getAButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.operatorController::getXButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.operatorController::getYButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
+
+        new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Forward));
+        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Backward));
+        
         // -- Intake
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 

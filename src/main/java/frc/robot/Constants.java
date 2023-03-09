@@ -35,6 +35,7 @@ public final class Constants {
     public static final int PIGEON_IMU_ID = 19;
     
     public static final PneumaticsModuleType PCM_TYPE= PneumaticsModuleType.REVPH;
+    public static final int TIMEOUT_MS = 30;
 
     /**
     * Constants for the Drivetrain
@@ -93,8 +94,8 @@ public final class Constants {
         public static final int BC_MOTOR_ID = 10;
         
         /******** PID Gains ********/
-        public static final PIDParameters MOTOR_A_PID_GAINS = new PIDParameters(0, "Joint A Motor PID", 0, 0, 0);
-        public static final PIDParameters MOTOR_B_PID_GAINS = new PIDParameters(0, "Joint B Motor PID", 0, 0, 0);
+        public static final PIDParameters JOINT_AB_MOTOR_PID = new PIDParameters(0, "Joint AB Motor PID", 1.9, 0.008, 20, 0.0, 50);
+        public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.5, 0.01, 2.5, 0.0, 50);
         
         /******** Gear Ratios ********/
         public static final double JOINT_A_MOTOR_GEAR_RATIO = 1.0;
