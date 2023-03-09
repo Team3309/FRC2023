@@ -1,6 +1,7 @@
 package friarLib2.utility;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 
@@ -11,121 +12,98 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Represents a set of PID constants
  */
-public class PIDParameters implements Sendable {
-    private double kP = 0;
-    private double kI = 0;
-    private double kD = 0;
-    private double kF = 0;
+public class PIDParameters implements Sendable
+{
+    private int SlotIndex;
 
-    private ArrayList<BaseTalon> linkedMotors  = new ArrayList<BaseTalon>();
+    private double P;
+    private double I;
+    private double D;
+    private double F;
+    private double IZone;
+
+    private final Set<BaseTalon> linkedMotors  = new HashSet<>();
     
-    public PIDParameters (double kP, double kI, double kD, double kF, String name) {
-        this.kP = kP;
-        this.kI = kI;
-        this.kD = kD;
-        this.kF = kF;
-        SmartDashboard.putData(name, this);
+    public PIDParameters (int slotIdx, String sendableName, double p, double i, double d, double f, double iZone)
+    {
+        this.P = p;
+        this.I = i;
+        this.D = d;
+        this.F = f;
+        this.IZone = iZone;
+        SmartDashboard.putData(sendableName, this);
     }
 
-    public PIDParameters (double kP, double kI, double kD, String name) {
-        this.kP = kP;
-        this.kI = kI;
-        this.kD = kD;
-        SmartDashboard.putData(name, this);
+    public PIDParameters (int slotIdx, String sendableName, double p, double i, double d)
+    {
+        this(slotIdx, sendableName, p, i, d, 0, 0);
     }
 
     /**
      * Helper method to initialize a Talon's PID parameters
-     * 
+     *
      * @param motor motor to configure
-     * @param PID PID parameters
      */
     public void configureMotorPID (BaseTalon motor) {
         linkedMotors.add(motor);
         updateMotorPID();
     }
 
-    /**
-     * Set the PID gains of the linked motor
-     */
-    public void updateMotorPID () {
+    public void updateMotorPID ()
+    {
         for (BaseTalon linkedMotor : linkedMotors) {
-            linkedMotor.config_kP(0, kP);
-            linkedMotor.config_kI(0, kI);
-            linkedMotor.config_kD(0, kD);
-            linkedMotor.config_kF(0, kF);
+            linkedMotor.config_kP(0, P);
+            linkedMotor.config_kI(0, I);
+            linkedMotor.config_kD(0, D);
+            linkedMotor.config_kF(0, F);
+            linkedMotor.config_IntegralZone(0, IZone);
         }
     }
 
 	@Override
-	public void initSendable(SendableBuilder builder) {
+	public void initSendable(SendableBuilder builder)
+    {
         builder.setSmartDashboardType("PIDController");
         builder.addDoubleProperty("p", this::getP, this::setP);
         builder.addDoubleProperty("i", this::getI, this::setI);
         builder.addDoubleProperty("d", this::getD, this::setD);
-        builder.addDoubleProperty("setpoint", this::dummyGetter, this::dummySetter);
-    }
-    
-    /**
-     * @return the proportional gain
-     */
-    public double getP () {
-        return kP;
+        builder.addDoubleProperty("f", this::getF, this::setF);
+        builder.addDoubleProperty("iZone", this::getIZone, this::setIZone);
     }
 
-    /**
-     * @return the integral gain
-     */
-    public double getI () {
-        return kI;
-    }
+    public double getP() { return P; }
+    public double getI() { return I; }
+    public double getD() { return D; }
+    public double getF() { return F; }
+    public double getIZone() { return IZone; }
 
-    /**
-     * @return the derivitave gain
-     */
-    public double getD () {
-        return kD;
-    }
-
-    /**
-     * @return the feedforward gain
-     */
-    public double getF () {
-        return kF;
-    }
-
-    /**
-     * @param kP new proportional gain
-     */
-    public void setP (double kP) {
-        this.kP = kP;
+    public void setP (double p)
+    {
+        this.P = p;
         updateMotorPID();
     }
 
-    /**
-     * @param kI new integral gain
-     */
-    public void setI (double kI) {
-        this.kI = kI;
+    public void setI (double i)
+    {
+        this.I = i;
         updateMotorPID();
     }
 
-    /**
-     * @param kD new integral gain
-     */
-    public void setD (double kD) {
-        this.kD = kD;
+    public void setD (double d)
+    {
+        this.D = d;
         updateMotorPID();
     }
 
-    /**
-     * @param kF new feedforward gain
-     */
-    public void setF (double kF) {
-        this.kF = kF;
+    public void setF (double f)
+    {
+        this.F = f;
         updateMotorPID();
     }
 
-    public double dummyGetter () { return 0; }
-    public void dummySetter (double d) {}
+    public void setIZone (double iZone)
+    {
+        this.IZone = iZone;
+        updateMotorPID();
+    }
 }

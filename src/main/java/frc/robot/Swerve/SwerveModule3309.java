@@ -47,8 +47,8 @@ public class SwerveModule3309 implements SwerveModule {
     public static final double STEERING_GEAR_RATIO_ENCODER = (1. / 1.); // Gear ratio between the CANCoder and the steering axis
     public static final double SLIP_THRESHOLD = 5; // Steering axis will be considered to have slipped if the difference between the Falcon and CANCoder's readings is greater than this value
 
-    public static final PIDParameters DRIVE_PID_GAINS = new PIDParameters(.1, 0.0007, 0.1, "Swerve Drive PID");
-    public static final PIDParameters STEERING_PID_GAINS = new PIDParameters(.1, 0.002, 0, "Swerve Steering PID");
+    public static final PIDParameters DRIVE_PID_GAINS = new PIDParameters(0, "Swerve Drive PID", .1, 0.0007, 0.1);
+    public static final PIDParameters STEERING_PID_GAINS = new PIDParameters(0, "Swerve Steering PID", .1, 0.002, 0);
     public static final double ABSOLUTE_MAX_DRIVE_SPEED = 7; // meters/sec
 
     public static final SupplyCurrentLimitConfiguration DRIVE_MOTOR_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(

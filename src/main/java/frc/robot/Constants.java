@@ -93,8 +93,8 @@ public final class Constants {
         public static final int BC_MOTOR_ID = 10;
         
         /******** PID Gains ********/
-        public static final PIDParameters MOTOR_A_PID_GAINS = new PIDParameters(0, 0, 0, "Joint A Motor PID");
-        public static final PIDParameters MOTOR_B_PID_GAINS = new PIDParameters(0, 0, 0, "Joint B Motor PID");
+        public static final PIDParameters MOTOR_A_PID_GAINS = new PIDParameters(0, "Joint A Motor PID", 0, 0, 0);
+        public static final PIDParameters MOTOR_B_PID_GAINS = new PIDParameters(0, "Joint B Motor PID", 0, 0, 0);
         
         /******** Gear Ratios ********/
         public static final double JOINT_A_MOTOR_GEAR_RATIO = 1.0;
