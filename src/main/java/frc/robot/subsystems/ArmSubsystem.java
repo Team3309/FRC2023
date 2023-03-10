@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
 import friarLib2.utility.PIDParameters;
+import pabeles.concurrency.ConcurrencyOps;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ArmSubsystem extends SubsystemBase
@@ -70,74 +72,73 @@ public class ArmSubsystem extends SubsystemBase
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Static Data
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private static final double StowAngleFront = 10;
-    private static final double StowAngleBack = 1000;
+    private static final double StowAngleFront = 11000;
+    private static final double StowAngleBack = -6000;
     
     private static final Map<ArmPosition, ArmPosePair> Poses = Map.ofEntries(
-        
-        // -- Stowed Arm
-        Map.entry(ArmPosition.Stowed,
-            new ArmPosePair(
-                new ArmPose(0, 0),
-                new ArmPose(0, 0)
-        )),
-        
-        // -- Pick up form floor
-        Map.entry(ArmPosition.PickupFloor,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        )),
-        
-        // -- Pick up from Substation
-        Map.entry(ArmPosition.PickupSubstation,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        )),
-        
-        // -- Pick up from Turntable
-        Map.entry(ArmPosition.PickupTurntable,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        )),
-        
-        // -- Score hybrid
-        Map.entry(ArmPosition.ScoreHybrid,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        )),
-        
-        // -- Score mid
-        Map.entry(ArmPosition.ScoreMid,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        )),
-        
-        // -- Score top
-        Map.entry(ArmPosition.ScoreTop,
-            new ArmPosePair(
-                new ArmPose(0, 0), //Forward
-                new ArmPose(0, 0)  //Backward
-        ))
+
+            // -- Stowed Arm
+            Map.entry(ArmPosition.Stowed,
+                    new ArmPosePair(
+                            new ArmPose(0, 0),
+                            new ArmPose(0, 0)
+                    )),
+
+            // -- Pick up form floor
+            Map.entry(ArmPosition.PickupFloor,
+                    new ArmPosePair(
+                            new ArmPose(9500, 0), //Forward
+                            new ArmPose(4000, 0)  //Backward
+                    )),
+
+            // -- Pick up from Substation
+            Map.entry(ArmPosition.PickupSubstation,
+                    new ArmPosePair(
+                            new ArmPose(0, 0), //Forward
+                            new ArmPose(0, 0)  //Backward
+                    )),
+
+            // -- Pick up from Turntable
+            Map.entry(ArmPosition.PickupTurntable,
+                    new ArmPosePair(
+                            new ArmPose(0, 0), //Forward
+                            new ArmPose(0, 0)  //Backward
+                    )),
+
+            // -- Score hybrid
+            Map.entry(ArmPosition.ScoreHybrid,
+                    new ArmPosePair(
+                            new ArmPose(10000, 0), //Forward
+                            new ArmPose(-10000, 0)  //Backward
+                    )),
+
+            // -- Score mid
+            Map.entry(ArmPosition.ScoreMid,
+                    new ArmPosePair(
+                            new ArmPose(20000, 0), //Forward
+                            new ArmPose(-15000, 0)  //Backward
+                    )),
+
+            // -- Score top
+            Map.entry(ArmPosition.ScoreTop,
+                    new ArmPosePair(
+                            new ArmPose(-30000, 0), //Forward
+                            new ArmPose(-30000, 0)  //Backward
+                    ))
     );
-    
     
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Arm Subsystem
     // -------------------------------------------------------------------------------------------------------------------------------------
 
     private final boolean AlwaysStow = true;
+
     private final WPI_TalonFX Motor_AB;
     private final WPI_TalonFX Motor_BC;
 
-    private ArmPosition DesiredPosition;
-    private ArmDirection DesiredDirection;
+    private ArmPosition DesiredPosition = ArmPosition.Stowed;
+    private ArmDirection DesiredDirection = ArmDirection.Forward;
     private final Solenoid ClampSolenoid;
-
 
     public ArmSubsystem()
     {
@@ -251,8 +252,14 @@ public class ArmSubsystem extends SubsystemBase
         return targetDirection != currentDirection;
     }
 
-    private ArmPose GetPose(ArmPosition position,  ArmDirection direction)
+    private ArmPose GetPose(ArmPosition position, ArmDirection direction)
     {
+        if (!Poses.containsKey(position))
+        {
+            System.out.println("Pose not found for position " + position.name());
+            return new ArmPose(0, 0);
+        }
+
         return Poses.get(position).getPose(direction);
     }
 
@@ -273,15 +280,22 @@ public class ArmSubsystem extends SubsystemBase
     public Command SetPositionAndDirectionCommand(ArmPosition position,  ArmDirection direction)
     {
         ArmPose pose = GetPose(position, direction);
-        
+        System.out.printf("Pose - Upper: %f Lower: %f", pose.UpperArm, pose.LowerArm);
+
         Command MoveUpperArm = MoveJointToTargetCommand(Motor_AB, pose.UpperArm);
         Command MoveLowerArm = MoveJointToTargetCommand(Motor_BC, pose.LowerArm);
-        
-        Command stowSequence = 
+
+        // Testing upper arm only
+        if (true)
+        {
+            return MoveUpperArm;
+        }
+
+        Command stowSequence = Commands.sequence(
                  StowLowerArmCommand()
-                .andThen(MoveUpperArm)
-                //.andThen(MoveLowerArm)
-                ;
+                , MoveUpperArm
+                //, MoveLowerArm
+        );
 
         if (AlwaysStow)
         {
@@ -310,8 +324,16 @@ public class ArmSubsystem extends SubsystemBase
     private Command MoveJointToTargetCommand(WPI_TalonFX motor, double position)
     {
         return
-             run(() -> motor.set(ControlMode.Position, position))
-            .until(() -> Math.abs(motor.getActiveTrajectoryPosition() - position) < Arm.TargetThreshold);
+             run(() ->
+             {
+                 System.out.printf("Driving motor %d to position %f", motor.getDeviceID(), position);
+                 //motor.set(ControlMode.MotionMagic, position);
+             })
+            .until(() ->
+            {
+                System.out.printf("Motor %d at position %f", motor.getDeviceID(), motor.getActiveTrajectoryPosition());
+                return Math.abs(motor.getActiveTrajectoryPosition() - position) < Arm.TargetThreshold;
+            });
     }
     
     private Command StowLowerArmCommand()

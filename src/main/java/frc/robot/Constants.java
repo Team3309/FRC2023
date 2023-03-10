@@ -98,8 +98,8 @@ public final class Constants {
         public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.5, 0.01, 2.5, 0.0, 50);
         
         /******** Gear Ratios ********/
-        public static final double JOINT_A_MOTOR_GEAR_RATIO = 1.0;
-        public static final double JOINT_B_MOTOR_GEAR_RATIO = 1.0;
+        public static final double JOINT_AB_MOTOR_GEAR_RATIO = 60;
+        public static final double JOINT_BC_MOTOR_GEAR_RATIO = 40;
         
         /******** Misc ********/
         public static final double TargetThreshold = 10;
