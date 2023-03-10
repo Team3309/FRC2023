@@ -46,9 +46,9 @@ public class Robot extends TimedRobot
         CommandScheduler.getInstance().run();
 
         // -- Output the robot orientation to the dashboard
-        SmartDashboard.putNumber("Robot Yaw", IMU.getRobotYaw().getDegrees());
-        SmartDashboard.putNumber("Robot Pitch", IMU.getRobotPitch().getDegrees());
-        SmartDashboard.putNumber("Robot Roll", IMU.getRobotRoll().getDegrees());
+//        SmartDashboard.putNumber("Robot Yaw", IMU.getRobotYaw().getDegrees());
+//        SmartDashboard.putNumber("Robot Pitch", IMU.getRobotPitch().getDegrees());
+//        SmartDashboard.putNumber("Robot Roll", IMU.getRobotRoll().getDegrees());
     }
 
 
@@ -56,7 +56,9 @@ public class Robot extends TimedRobot
     // -- Disabled
     // -------------------------------------------------------------------------------------------------------------------------------------
     @Override
-    public void disabledInit() { }
+    public void disabledInit() {
+        m_robotContainer.OnDisabledInit();
+    }
 
     @Override
     public void disabledPeriodic() { }

@@ -169,15 +169,15 @@ public class DriveSubsystem extends SubsystemBase {
             }
         );
 
-        frontLeftModule.outputToDashboard();
-        frontRightModule.outputToDashboard();
-        backLeftModule.outputToDashboard();
-        backRightModule.outputToDashboard();
+//        frontLeftModule.outputToDashboard();
+//        frontRightModule.outputToDashboard();
+//        backLeftModule.outputToDashboard();
+//        backRightModule.outputToDashboard();
 
         field.setRobotPose(currentRobotPose);
 
-        SmartDashboard.putNumber("Robot heading", IMU.getRobotYaw().getDegrees());
-        SmartDashboard.putNumber("Meters to target", LimelightVision.getMetersFromTarget());
+//        SmartDashboard.putNumber("Robot heading", IMU.getRobotYaw().getDegrees());
+//        SmartDashboard.putNumber("Meters to target", LimelightVision.getMetersFromTarget());
     }
 
 
