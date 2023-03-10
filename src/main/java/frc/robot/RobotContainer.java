@@ -78,11 +78,9 @@ public class RobotContainer
 
         // -- Arm
         new Trigger(OI.operatorController::getAButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
-
-        //new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreHybrid));
         new Trigger(OI.operatorController::getBButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Test));
-        new Trigger(OI.operatorController::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.operatorController::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+        //new Trigger(OI.operatorController::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+        //new Trigger(OI.operatorController::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
 
         new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
         new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
