@@ -10,15 +10,17 @@
         "x": 2.9097798879358443,
         "y": 2.76
       },
-      "holonomicAngle": -180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": true,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Arm_ScoreTop_Forward",
-          "Clamp_Open"
+          "Arm_ScoreTop_Backward",
+          "Wait",
+          "Clamp_Open",
+          "Arm_Stow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -38,7 +40,7 @@
         "x": 5.997842081154248,
         "y": 2.7520195211330596
       },
-      "holonomicAngle": -180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": true,
@@ -52,49 +54,24 @@
     },
     {
       "anchorPoint": {
-        "x": 5.39,
+        "x": 5.4,
         "y": 2.76
       },
       "prevControl": {
-        "x": 5.378580831862518,
-        "y": 2.763438689270541
-      },
-      "nextControl": {
-        "x": 5.4014191681374815,
-        "y": 2.7565613107294586
-      },
-      "holonomicAngle": -180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [
-          "BalanceForward"
-        ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.87,
-        "y": 2.76
-      },
-      "prevControl": {
-        "x": 3.4148757025719183,
-        "y": 2.7772708947981988
+        "x": 5.369787833592761,
+        "y": 2.7520195211330596
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Balance"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
