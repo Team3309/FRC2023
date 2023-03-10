@@ -24,13 +24,13 @@ public class ScoreTwoCubesHM extends SequentialCommandGroup {
         PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance()); // Mirror if we're on the red alliance
 
         HashMap<String, Command> eventmap = new HashMap<>();
-        eventmap.put("CloseClamp", arm.ToggleClampCommand());
+        eventmap.put("CloseClamp", arm.Command_ToggleClamp());
         //eventmap.put("MoveArmToHigh", );
-        eventmap.put("ScoreHigh", arm.ToggleClampCommand());
+        eventmap.put("ScoreHigh", arm.Command_ToggleClamp());
         //eventmap.put("MoveArmToBackToPickUp", );
-        eventmap.put("PickupGamePiece", arm.ToggleClampCommand());
+        eventmap.put("PickupGamePiece", arm.Command_ToggleClamp());
         //eventmap.put("MoveToMid", );
-        eventmap.put("ScoreCubeMid", arm.ToggleClampCommand());
+        eventmap.put("ScoreCubeMid", arm.Command_ToggleClamp());
 
     }
 

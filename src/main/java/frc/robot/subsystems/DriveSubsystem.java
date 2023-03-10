@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.IMU;
-import frc.robot.LimelightVision;
 import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
 
@@ -186,29 +185,29 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public Command AutoBalanceCommand()
+    public Command Command_AutoBalance()
     {
         return Commands.sequence(
-              DriveDistance(1.75, 1.45)
-            , DriveDistance(0.75, 0.2)
-            , DriveDistance(0.5, 1.5).raceWith(WaitUntilFallingCommand())
-            , DriveDistance(-0.5, 0.03)
+              Command_DriveDistance(1.75, 1.45)
+            , Command_DriveDistance(0.75, 0.2)
+            , Command_DriveDistance(0.5, 1.5).raceWith(Command_WaitUntilFalling())
+            , Command_DriveDistance(-0.5, 0.03)
         );
     }
 
-    public Command DriveStraightCommand(double metersPerSecond)
+    public Command Command_DriveStraight(double metersPerSecond)
     {
         return run( () -> setChassisSpeeds(new ChassisSpeeds(metersPerSecond, 0, 0)) )
                 .beforeStarting(new PrintCommand(System.currentTimeMillis() + "  Drive Straight " + metersPerSecond));
     }
 
-    public Command DriveDistance(double metersPerSecond, double distanceInMeters)
+    public Command Command_DriveDistance(double metersPerSecond, double distanceInMeters)
     {
         final AtomicReference<Pose2d> startingPose = new AtomicReference<>(); // wrapper to allow us to change captured object inside a lambda
 
         return Commands.sequence(
                   runOnce(() -> startingPose.set(currentRobotPose))
-                , DriveStraightCommand(metersPerSecond)
+                , Command_DriveStraight(metersPerSecond)
                         .until(() -> {
                             if (metersPerSecond > 0)
                             {
@@ -222,7 +221,7 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private Command WaitUntilFallingCommand()
+    private Command Command_WaitUntilFalling()
     {
         final int numSamples = 8;
         AtomicReference<LinearFilter> filter = new AtomicReference<>();

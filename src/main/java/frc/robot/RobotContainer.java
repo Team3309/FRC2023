@@ -54,7 +54,7 @@ public class RobotContainer
 
     public void OnDisabledInit()
     {
-        Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed);
+        Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed);
     }
 
     private void ConfigureBindings()
@@ -64,8 +64,8 @@ public class RobotContainer
         // ----------------------------------------------------------------------------------------
 
         // -- Clamp
-        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClampCommand(true));
-        new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClampCommand(false));
+        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.Command_ActuateClamp(true));
+        new Trigger(OI.rightStick::getTop).onTrue(Arm.Command_ActuateClamp(false));
 
         // -- Auto Turn
         new Trigger(OI.leftStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(Drive));
@@ -77,23 +77,23 @@ public class RobotContainer
         // ----------------------------------------------------------------------------------------
 
         // -- Arm
-        new Trigger(OI.operatorController::getAButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.operatorController::getAButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
 
         //new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreHybrid));
-        new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Test));
-        new Trigger(OI.operatorController::getXButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.operatorController::getYButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreMid));
+        new Trigger(OI.operatorController::getBButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Test));
+        new Trigger(OI.operatorController::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+        new Trigger(OI.operatorController::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
 
-        new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Forward));
-        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Backward));
+        new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
+        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
 
-        new Trigger(OI.operatorController::getBackButton).onTrue(Arm.OutputArmPositionCommand());
+        new Trigger(OI.operatorController::getBackButton).onTrue(Arm.Command_OutputArmPosition());
 
         // -- Intake
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
         // -- AutoBalance
-        new Trigger(OI.rightStick::getTrigger).onTrue(Drive.AutoBalanceCommand());
+        new Trigger(OI.rightStick::getTrigger).onTrue(Drive.Command_AutoBalance());
 
         // -- Vision
         //new Trigger(OI.rightStick::getTop).onTrue(LimelightVision.SetPipelineCommand(0));
@@ -105,7 +105,7 @@ public class RobotContainer
         // -- Reset Odometry
 
         // -- Re-zero the arm (for debugging)
-        new Trigger(OI.operatorController::getStartButton).whileTrue(Arm.ZeroArmCommand());
+        new Trigger(OI.operatorController::getStartButton).whileTrue(Arm.Command_ZeroArm());
     }
 
 
@@ -120,21 +120,21 @@ public class RobotContainer
         // -- Map Path Planner events to Commands
         HashMap<String, Command> eventMap = new HashMap<>();
 
-        eventMap.put("BalanceForward", Drive.AutoBalanceCommand());
+        eventMap.put("BalanceForward", Drive.Command_AutoBalance());
 
-        eventMap.put("Arm_ScoreTop_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
-        eventMap.put("Arm_ScoreTop_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
-        eventMap.put("Arm_ScoreMid_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Forward));
-        eventMap.put("Arm_ScoreMid_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Backward));
-        eventMap.put("Arm_ScoreHybrid_Forward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Forward));
-        eventMap.put("Arm_PickupHybrid_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Backward));
-        eventMap.put("Arm_PickupFloor_Backward", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.PickupFloorCone, ArmSubsystem.ArmDirection.Backward));
-        eventMap.put("Arm_Stow", Arm.SetPositionAndDirectionCommand(ArmSubsystem.ArmPosition.Stowed, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_ScoreTop_Forward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_ScoreTop_Backward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_ScoreMid_Forward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_ScoreMid_Backward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreMid, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_ScoreHybrid_Forward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Forward));
+        eventMap.put("Arm_PickupHybrid_Backward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_PickupFloor_Backward", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.PickupFloorCone, ArmSubsystem.ArmDirection.Backward));
+        eventMap.put("Arm_Stow", Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.Stowed, ArmSubsystem.ArmDirection.Forward));
         eventMap.put("Wait", new WaitCommand(0.5));
 
 
-        eventMap.put("Clamp_Close", Arm.ActuateClampCommand(true));
-        eventMap.put("Clamp_Open", Arm.ActuateClampCommand(false));
+        eventMap.put("Clamp_Close", Arm.Command_ActuateClamp(true));
+        eventMap.put("Clamp_Open", Arm.Command_ActuateClamp(false));
 
         // -- Builder
         AutoBuilder = new SwerveAutoBuilder(

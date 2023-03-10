@@ -299,7 +299,7 @@ public class ArmSubsystem extends SubsystemBase
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
 
-    public Command SetPositionAndDirectionCommand(ArmPosition position, ArmDirection direction)
+    public Command Command_SetPositionAndDirection(ArmPosition position, ArmDirection direction)
     {
         return Commands.sequence(new PrintCommand(String.format("SetPositionAndDirection %s %s\n", position.name(), direction.name()))
                 , runOnce(() ->
@@ -307,37 +307,37 @@ public class ArmSubsystem extends SubsystemBase
                     DesiredPosition = position;
                     DesiredDirection = direction;
                 })
-                , MoveArmToDesiredCommand()
+                , Command_MoveArmToDesired()
         );
     }
 
-    public Command SetDirectionCommand(ArmDirection direction)
+    public Command Command_SetDirection(ArmDirection direction)
     {
         return Commands.sequence(new PrintCommand(String.format("SetDirection %s\n", direction.name()))
                 , runOnce(() -> DesiredDirection = direction)
-                , MoveArmToDesiredCommand()
+                , Command_MoveArmToDesired()
         );
     }
 
-    public Command SetPositionCommand(ArmPosition position)
+    public Command Command_SetPosition(ArmPosition position)
     {
         return Commands.sequence(new PrintCommand(String.format("SetPosition %s\n", position.name()))
                 , runOnce(() -> DesiredPosition = position)
-                , MoveArmToDesiredCommand()
+                , Command_MoveArmToDesired()
         );
     }
     
-    public Command ActuateClampCommand(boolean close)
+    public Command Command_ActuateClamp(boolean close)
     {
         return runOnce( () -> ClampSolenoid.set(!close) );
     }
 
-    public Command ToggleClampCommand()
+    public Command Command_ToggleClamp()
     {
         return runOnce(ClampSolenoid::toggle);
     }
 
-    public Command ZeroArmCommand()
+    public Command Command_ZeroArm()
     {
         return runOnce(() ->
         {
@@ -347,7 +347,7 @@ public class ArmSubsystem extends SubsystemBase
         }).ignoringDisable(true);
     }
 
-    public Command OutputArmPositionCommand()
+    public Command Command_OutputArmPosition()
     {
         return runOnce(() ->
                 System.out.printf("Upper: %.2f, Lower: %.2f\n", Motor_AB.getSelectedSensorPosition(), Motor_BC.getSelectedSensorPosition())
@@ -359,16 +359,16 @@ public class ArmSubsystem extends SubsystemBase
     // -------------------------------------------------------------------------------------------------------------------------------------
     
     // -- Calculates a safe trajectory to move the arm to the desired position/direction.
-    public Command MoveArmToDesiredCommand()
+    public Command Command_MoveArmToDesired()
     {
         Command stowSequence = Commands.sequence(new PrintCommand("Stow Arm Sequence")
-            , StowClawCommand()
-            , ActuateArmToDesiredCommand_UNSAFE(true, false) // Move arm first, keeping the claw stowed
-            , ActuateArmToDesiredCommand_UNSAFE(false, true) // Move claw now that arm is in place
+            , Command_StowClaw()
+            , Command_ActuateArmToDesired_UNSAFE(true, false) // Move arm first, keeping the claw stowed
+            , Command_ActuateArmToDesired_UNSAFE(false, true) // Move claw now that arm is in place
         );
 
         Command parallelMove = Commands.sequence(new PrintCommand("Parallel Arm Sequence")
-            , ActuateArmToDesiredCommand_UNSAFE(true, true)
+            , Command_ActuateArmToDesired_UNSAFE(true, true)
         );
 
         return new ConditionalCommand(
@@ -380,7 +380,7 @@ public class ArmSubsystem extends SubsystemBase
 
     // -- Does the actual work of actuating the motors.
     //    This command is unsafe, it does not handle preventing collisions. Use SAFE for that.
-    private Command ActuateArmToDesiredCommand_UNSAFE(boolean moveAB, boolean moveBC)
+    private Command Command_ActuateArmToDesired_UNSAFE(boolean moveAB, boolean moveBC)
     {
         AtomicReference<ArmPose> DesiredPose = new AtomicReference<>();
         
@@ -426,7 +426,7 @@ public class ArmSubsystem extends SubsystemBase
     }
     
     // -- Store off the current desired position, move the claw to the stowed position, then restore the desired position
-    private Command StowClawCommand()
+    private Command Command_StowClaw()
     {
         AtomicReference<ArmPosition> PreviousDesiredPosition = new AtomicReference<>();
         
@@ -436,7 +436,7 @@ public class ArmSubsystem extends SubsystemBase
                     PreviousDesiredPosition.set(DesiredPosition); // Cache off the current desired position
                     DesiredPosition = ArmPosition.Stowed; // Update the desired position to stow the claw 
                 })
-                , ActuateArmToDesiredCommand_UNSAFE(false, true) // Move the claw
+                , Command_ActuateArmToDesired_UNSAFE(false, true) // Move the claw
                 , runOnce(() -> DesiredPosition = PreviousDesiredPosition.get()) // Restore cached desired position
         );
     }
