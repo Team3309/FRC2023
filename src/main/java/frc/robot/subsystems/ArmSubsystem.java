@@ -15,6 +15,7 @@ import frc.robot.Constants.Arm;
 import friarLib2.utility.PIDParameters;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ArmSubsystem extends SubsystemBase
 {
@@ -39,12 +40,6 @@ public class ArmSubsystem extends SubsystemBase
     {
         Forward,
         Backward,
-    }
-
-    public enum Joint
-    {
-        AB,
-        BC,
     }
     
     private static class ArmPose
@@ -172,8 +167,7 @@ public class ArmSubsystem extends SubsystemBase
 
     private ArmPosition DesiredPosition = ArmPosition.Stowed;
     private ArmDirection DesiredDirection = ArmDirection.Forward;
-    private ArmPose DesiredPose = null;
-
+    
     public ArmSubsystem()
     {
         Motor_AB = ConfigureMotor(Constants.Arm.AB_MOTOR_ID,
@@ -301,48 +295,38 @@ public class ArmSubsystem extends SubsystemBase
         return Poses.get(position).getPose(direction);
     }
 
-    private WPI_TalonFX GetMotorForJoint(Joint joint)
-    {
-        return joint == Joint.AB ? Motor_AB : Motor_BC;
-    }
-
-    private double GetPositionForPoseJoint(ArmPose pose, Joint joint)
-    {
-        return joint == Joint.AB ? pose.UpperArm : pose.LowerArm;
-    }
-
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
 
     public Command SetPositionAndDirectionCommand(ArmPosition position, ArmDirection direction)
     {
-        return Commands.sequence(new PrintCommand(String.format("SetArmAndDirectionCommand %s %s\n", position.name(), direction.name()))
+        return Commands.sequence(new PrintCommand(String.format("SetPositionAndDirection %s %s\n", position.name(), direction.name()))
                 , runOnce(() ->
                 {
                     DesiredPosition = position;
                     DesiredDirection = direction;
                 })
-                , GoToDesiredPositionAndDirectionCommand()
+                , MoveArmToDesiredCommand()
         );
     }
 
     public Command SetDirectionCommand(ArmDirection direction)
     {
-        return Commands.sequence(new PrintCommand(String.format("SetDirectionCommand %s\n", direction.name()))
+        return Commands.sequence(new PrintCommand(String.format("SetDirection %s\n", direction.name()))
                 , runOnce(() -> DesiredDirection = direction)
-                , GoToDesiredPositionAndDirectionCommand()
+                , MoveArmToDesiredCommand()
         );
     }
 
     public Command SetPositionCommand(ArmPosition position)
     {
-        return Commands.sequence(new PrintCommand(String.format("SetPositionCommand %s\n", position.name()))
+        return Commands.sequence(new PrintCommand(String.format("SetPosition %s\n", position.name()))
                 , runOnce(() -> DesiredPosition = position)
-                , GoToDesiredPositionAndDirectionCommand()
+                , MoveArmToDesiredCommand()
         );
     }
-
+    
     public Command ActuateClampCommand(boolean close)
     {
         return runOnce( () -> ClampSolenoid.set(!close) );
@@ -366,74 +350,94 @@ public class ArmSubsystem extends SubsystemBase
     public Command OutputArmPositionCommand()
     {
         return runOnce(() ->
-                System.out.printf("Upper: %.2f, Lower: %.2f\n"
-                        , Motor_AB.getSelectedSensorPosition()
-                        , Motor_BC.getSelectedSensorPosition()))
-                .ignoringDisable(true);
+                System.out.printf("Upper: %.2f, Lower: %.2f\n", Motor_AB.getSelectedSensorPosition(), Motor_BC.getSelectedSensorPosition())
+        ).ignoringDisable(true);
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public Command GoToDesiredPositionAndDirectionCommand()
+    
+    // -- Calculates a safe trajectory to move the arm to the desired position/direction.
+    public Command MoveArmToDesiredCommand()
     {
         Command stowSequence = Commands.sequence(new PrintCommand("Stow Arm Sequence")
-                , CommandStowArmCommand()
-                , MoveJointToDesiredPose(Joint.AB)
-                , MoveJointToDesiredPose(Joint.BC)
+            , StowClawCommand()
+            , ActuateArmToDesiredCommand_UNSAFE(true, false) // Move arm first, keeping the claw stowed
+            , ActuateArmToDesiredCommand_UNSAFE(false, true) // Move claw now that arm is in place
         );
 
-        Command parallelMove = Commands.parallel(new PrintCommand("Parallel Arm Sequence")
-                , MoveArmToDesiredPose()
+        Command parallelMove = Commands.sequence(new PrintCommand("Parallel Arm Sequence")
+            , ActuateArmToDesiredCommand_UNSAFE(true, true)
         );
 
-        return Commands.sequence(
-                runOnce(() -> DesiredPose = GetPose(DesiredPosition, DesiredDirection))
-                , new ConditionalCommand(
-                        stowSequence,
-                        parallelMove,
-                        () -> AlwaysStow || DoesPoseRequireStowingLowerArm(DesiredPose)
-                ));
+        return new ConditionalCommand(
+            stowSequence,
+            parallelMove,
+            () -> AlwaysStow || DoesPoseRequireStowingLowerArm(GetPose(DesiredPosition, DesiredDirection))
+        );
     }
 
-    private Command MoveJointToDesiredPose(Joint joint)
+    // -- Does the actual work of actuating the motors.
+    //    This command is unsafe, it does not handle preventing collisions. Use SAFE for that.
+    private Command ActuateArmToDesiredCommand_UNSAFE(boolean moveAB, boolean moveBC)
     {
-        return
-             run(() ->
-             {
-                 var motor = GetMotorForJoint(joint);
-                 var position = GetPositionForPoseJoint(DesiredPose, joint);
-
-                 //System.out.printf("Driving motor %d to position %f\n", motor.getDeviceID(), position);
-                 motor.set(ControlMode.MotionMagic, position);
-             })
+        AtomicReference<ArmPose> DesiredPose = new AtomicReference<>();
+        
+        Command Move =
+            run(() ->
+            {
+                if (moveAB)
+                {
+                    //System.out.printf("Driving motor %d to position %f\n", Motor_AB.getDeviceID(), DesiredPose.get().UpperArm);
+                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.get().UpperArm);
+                }
+    
+                if (moveBC)
+                {
+                    //System.out.printf("Driving motor %d to position %f\n", Motor_BC.getDeviceID(), DesiredPose.get().LowerArm);
+                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.get().LowerArm);
+                }
+            })
             .until(() ->
             {
-                var motor = GetMotorForJoint(joint);
-                var position = GetPositionForPoseJoint(DesiredPose, joint);
+                boolean abAtTarget = true;
+                boolean bcAtTarget = true;
 
-                //System.out.printf("Motor %d at position %f\n", motor.getDeviceID(), motor.getActiveTrajectoryPosition());
-                return Math.abs(motor.getActiveTrajectoryPosition() - position) < Arm.TargetThreshold;
+                if (moveAB)
+                {
+                    //System.out.printf("Motor %d at position %f\n", Motor_AB.getDeviceID(), Motor_AB.getActiveTrajectoryPosition());
+                    abAtTarget = Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.get().UpperArm) < Arm.TargetThreshold;
+                }
+
+                if (moveBC)
+                {
+                    //System.out.printf("Motor %d at position %f\n", Motor_BC.getDeviceID(), Motor_BC.getActiveTrajectoryPosition());
+                    bcAtTarget = Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.get().LowerArm) < Arm.TargetThreshold;
+                }
+
+                return abAtTarget && bcAtTarget;
             });
-    }
-
-    // -- Moves the arm and the claw at the same time together
-    private Command MoveArmToDesiredPose()
-    {
+        
         return
-                run(() -> {
-                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.UpperArm);
-                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.LowerArm);
-                })
-                .until(() ->   Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.UpperArm) < Arm.TargetThreshold
-                            && Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.LowerArm) < Arm.TargetThreshold);
+             runOnce(() -> DesiredPose.set(GetPose(DesiredPosition, DesiredDirection)))
+            .andThen(Move);
+            
     }
-
-    private Command CommandStowArmCommand()
+    
+    // -- Store off the current desired position, move the claw to the stowed position, then restore the desired position
+    private Command StowClawCommand()
     {
+        AtomicReference<ArmPosition> PreviousDesiredPosition = new AtomicReference<>();
+        
         return Commands.sequence(
-                  runOnce(() -> DesiredPosition = ArmPosition.Stowed)
-                , MoveArmToDesiredPose()
-                );
+                runOnce(() ->
+                {
+                    PreviousDesiredPosition.set(DesiredPosition); // Cache off the current desired position
+                    DesiredPosition = ArmPosition.Stowed; // Update the desired position to stow the claw 
+                })
+                , ActuateArmToDesiredCommand_UNSAFE(false, true) // Move the claw
+                , runOnce(() -> DesiredPosition = PreviousDesiredPosition.get()) // Restore cached desired position
+        );
     }
 }
