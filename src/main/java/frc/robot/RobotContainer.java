@@ -184,7 +184,7 @@ public class RobotContainer
 //        AutoChooser.addOption("AutoBalance", Drive.AutoBalanceCommand());
         AutoChooser.addOption("No Auto", new WaitCommand(0));
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
-
+        AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
         SmartDashboard.putData(AutoChooser);
     }
 

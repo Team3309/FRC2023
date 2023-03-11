@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.8983607197983627,
-        "y": 4.453475573617814
+        "x": 1.9326182242108072,
+        "y": 5.035853148629374
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.857570843346815,
-        "y": 4.601924759405074
+        "x": 2.9146666840342226,
+        "y": 5.092948989316782
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -17,10 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Arm_ScoreHybrid_Forward",
-          "Wait",
-          "Clamp_Open",
-          "Arm_Stow"
+          "Wait"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -29,16 +26,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.392626169867724,
-        "y": 4.544828918717667
+        "x": 5.7352012139921715,
+        "y": 5.04
       },
       "prevControl": {
-        "x": 5.3812070017302425,
-        "y": 4.536885324198
+        "x": 5.72378204585469,
+        "y": 5.032056405480333
       },
       "nextControl": {
-        "x": 5.414227550229227,
-        "y": 4.55985563560203
+        "x": 5.756802594353674,
+        "y": 5.055026716884363
       },
       "holonomicAngle": -180.0,
       "isReversal": false,
@@ -58,8 +55,8 @@
         "y": 2.694923680445652
       },
       "prevControl": {
-        "x": 5.952165408604322,
-        "y": 3.517103786344325
+        "x": 5.575332860067429,
+        "y": 3.5513612907567698
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
