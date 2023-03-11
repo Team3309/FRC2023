@@ -377,12 +377,19 @@ public class ArmSubsystem extends SubsystemBase
             () -> AlwaysStow || DoesPoseRequireStowingLowerArm(GetPose(DesiredPosition, DesiredDirection))
         );
     }
-
+    
     // -- Does the actual work of actuating the motors.
     //    This command is unsafe, it does not handle preventing collisions. Use SAFE for that.
     private Command Command_ActuateArmToDesired_UNSAFE(boolean moveAB, boolean moveBC)
     {
         AtomicReference<ArmPose> DesiredPose = new AtomicReference<>();
+        
+        Command Debug = runOnce(() -> System.out.printf("Move Joint\n  AB %.2f -> %.2f\n  BC: %.2f -> %.2f\n"
+                , Motor_AB.getSelectedSensorPosition(0)
+                , DesiredPose.get().UpperArm
+                , Motor_BC.getSelectedSensorPosition(0)
+                , DesiredPose.get().LowerArm
+            ));
         
         Command Move =
             run(() ->
@@ -419,9 +426,9 @@ public class ArmSubsystem extends SubsystemBase
                 return abAtTarget && bcAtTarget;
             });
         
-        return
-             runOnce(() -> DesiredPose.set(GetPose(DesiredPosition, DesiredDirection)))
-            .andThen(Move);
+        return runOnce(() -> DesiredPose.set(GetPose(DesiredPosition, DesiredDirection)))
+                .andThen(Debug)
+                .andThen(Move);
             
     }
     
