@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
@@ -15,6 +17,7 @@ import frc.robot.Constants.Arm;
 import friarLib2.utility.PIDParameters;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ArmSubsystem extends SubsystemBase
 {
@@ -99,8 +102,8 @@ public class ArmSubsystem extends SubsystemBase
             // -- Test
             Map.entry(ArmPosition.Test,
                     new ArmPosePair(
-                            new ArmPose(10000, 5000),
-                            new ArmPose(-10000, -5000)
+                            new ArmPose(20000, 5000),
+                            new ArmPose(-20000, -5000)
                     )),
 
             // -- Pick up form floor
@@ -142,7 +145,7 @@ public class ArmSubsystem extends SubsystemBase
             Map.entry(ArmPosition.ScoreHybrid,
                     new ArmPosePair(
                             new ArmPose(9600, 30000), //Forward
-                            new ArmPose(-300, -21200)  //Backward
+                            new ArmPose(-500, -21200)  //Backward
                     )),
 
             // -- Score mid
@@ -164,11 +167,11 @@ public class ArmSubsystem extends SubsystemBase
     // -- Arm Subsystem
     // -------------------------------------------------------------------------------------------------------------------------------------
 
-    private final boolean AlwaysStow = true;
+    private final boolean AlwaysStow = false;
 
     private final WPI_TalonFX Motor_AB;
     private final WPI_TalonFX Motor_BC;
-    private final Solenoid ClampSolenoid;
+    private final DoubleSolenoid ClampSolenoid;
 
     private ArmPosition DesiredPosition = ArmPosition.Stowed;
     private ArmDirection DesiredDirection = ArmDirection.Forward;
@@ -192,12 +195,13 @@ public class ArmSubsystem extends SubsystemBase
                 5000,
                 20000);
 
-        ClampSolenoid = null;
-//        ClampSolenoid = new Solenoid(
-//                Constants.PCM_CAN_ID,
-//                Constants.PCM_TYPE,
-//                Constants.Arm.CLAMP_SOLENOID_ID
-//        );
+        //ClampSolenoid = null;
+        ClampSolenoid = new DoubleSolenoid(
+                Constants.PCM_TYPE,
+                1,
+                14
+
+        );
     }
 
     private WPI_TalonFX ConfigureMotor(
@@ -343,9 +347,9 @@ public class ArmSubsystem extends SubsystemBase
         );
     }
 
-    public Command ActuateClampCommand(boolean close)
+    public Command ActuateClampCommand(DoubleSolenoid.Value value)
     {
-        return runOnce( () -> ClampSolenoid.set(!close) );
+        return runOnce( () -> ClampSolenoid.set(value) );
     }
 
     public Command ToggleClampCommand()
@@ -387,24 +391,24 @@ public class ArmSubsystem extends SubsystemBase
                 , MoveArmToDesiredPose()
         );
 
-        return Commands.sequence(
-                runOnce(() -> DesiredPose = GetPose(DesiredPosition, DesiredDirection))
-                , new ConditionalCommand(
+        return new ConditionalCommand(
                         stowSequence,
                         parallelMove,
-                        () -> AlwaysStow || DoesPoseRequireStowingLowerArm(DesiredPose)
-                ));
+                        () -> AlwaysStow || DoesPoseRequireStowingLowerArm(GetPose(DesiredPosition, DesiredDirection))
+                );
     }
 
     private Command MoveJointToDesiredPose(Joint joint)
     {
-        return
+        return Commands.sequence(
+                runOnce(() -> DesiredPose = GetPose(DesiredPosition, DesiredDirection)),
+                DebugArmCommand(),
              run(() ->
              {
                  var motor = GetMotorForJoint(joint);
                  var position = GetPositionForPoseJoint(DesiredPose, joint);
 
-                 //System.out.printf("Driving motor %d to position %f\n", motor.getDeviceID(), position);
+//                 System.out.printf("Driving motor %d to position %f\n", motor.getDeviceID(), position);
                  motor.set(ControlMode.MotionMagic, position);
              })
             .until(() ->
@@ -412,28 +416,47 @@ public class ArmSubsystem extends SubsystemBase
                 var motor = GetMotorForJoint(joint);
                 var position = GetPositionForPoseJoint(DesiredPose, joint);
 
-                //System.out.printf("Motor %d at position %f\n", motor.getDeviceID(), motor.getActiveTrajectoryPosition());
+//                System.out.printf("Motor %d at position %f\n", motor.getDeviceID(), motor.getActiveTrajectoryPosition());
                 return Math.abs(motor.getActiveTrajectoryPosition() - position) < Arm.TargetThreshold;
-            });
+            }));
+    }
+
+    private Command DebugArmCommand()
+    {
+        return runOnce(() -> System.out.printf("Move Joint\n AB %.2f -> %.2f\n BC: %.2f -> %.2f\n"
+                , Motor_AB.getSelectedSensorPosition(0)
+                , DesiredPose.UpperArm
+                , Motor_BC.getSelectedSensorPosition(0)
+                , DesiredPose.LowerArm
+                )
+        );
     }
 
     // -- Moves the arm and the claw at the same time together
     private Command MoveArmToDesiredPose()
     {
-        return
+        return Commands.sequence(
+                runOnce(() -> DesiredPose = GetPose(DesiredPosition, DesiredDirection)),
+                DebugArmCommand(),
                 run(() -> {
                     Motor_AB.set(ControlMode.MotionMagic, DesiredPose.UpperArm);
                     Motor_BC.set(ControlMode.MotionMagic, DesiredPose.LowerArm);
                 })
                 .until(() ->   Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.UpperArm) < Arm.TargetThreshold
-                            && Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.LowerArm) < Arm.TargetThreshold);
+                            && Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.LowerArm) < Arm.TargetThreshold));
     }
 
     private Command CommandStowArmCommand()
     {
+        AtomicReference<ArmPosition>PreviousDesiredPosition = new AtomicReference<>();
+
         return Commands.sequence(
-                  runOnce(() -> DesiredPosition = ArmPosition.Stowed)
-                , MoveArmToDesiredPose()
-                );
+                  runOnce(() ->
+                  {
+                      PreviousDesiredPosition.set(DesiredPosition);
+                      DesiredPosition = ArmPosition.Stowed;
+                  }),
+                MoveJointToDesiredPose(Joint.BC),
+                runOnce(() -> DesiredPosition = PreviousDesiredPosition.get()));
     }
 }
