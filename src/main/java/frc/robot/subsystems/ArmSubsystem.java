@@ -111,7 +111,7 @@ public class ArmSubsystem extends SubsystemBase
                     new ArmPosePair(
                             new ArmPose(4100, 28000), //Forward
                             new ArmPose(3000, -21000)  //Backward
-                    )),
+                    )),// this is where we change
 
             // -- Pick up form floor
             Map.entry(ArmPosition.PickupFloorCube,
