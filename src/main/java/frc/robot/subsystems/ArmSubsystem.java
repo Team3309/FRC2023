@@ -123,8 +123,8 @@ public class ArmSubsystem extends SubsystemBase
             // -- Pick up from Substation Cone
             Map.entry(ArmPosition.PickupSubstationCone,
                     new ArmPosePair(
-                            new ArmPose(23000, 31000), //Forward
-                            new ArmPose(-23000, 27000)  //Backward
+                            new ArmPose(26000, 31000), //Forward
+                            new ArmPose(-26000, -27000)  //Backward
                     )),
 
             // -- Pick up from Substation Cube

@@ -40,6 +40,17 @@ public class XboxController3309 extends XboxController {
         return applyDeadband(super.getRightTriggerAxis(), deadband);
     }
 
+    public boolean IsRightTriggerPressed()
+    {
+        return getRightTriggerAxisWithDeadband() > 0;
+    }
+
+    public boolean IsLeftTriggerPressed()
+    {
+        return getLeftTriggerAxisWithDeadband() > 0;
+    }
+
+
     /**
      * @return A vector that represents the position of the left joystick,
      * without deadband

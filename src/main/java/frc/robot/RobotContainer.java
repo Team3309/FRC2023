@@ -65,8 +65,10 @@ public class RobotContainer
         // ----------------------------------------------------------------------------------------
 
         // -- Clamp
-        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
-        new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
+//        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
+//        new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
+        new Trigger(OI.operatorController::IsLeftTriggerPressed).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
+        new Trigger(OI.operatorController::IsRightTriggerPressed).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
 //        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ToggleClampCommand());
 
         // -- Auto Turn
@@ -94,10 +96,10 @@ public class RobotContainer
 //        new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Test));
         new Trigger(OI.operatorController::getXButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreMid));
 //        new Trigger(OI.operatorController::getYButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreTop));
-//        new Trigger(() -> OI.operatorController.getPOV() == 0).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCone)); //D-pad up
+        new Trigger(() -> OI.operatorController.getPOV() == 0).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCone)); //D-pad up
         new Trigger(() -> OI.operatorController.getPOV() == 90).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupFloorCone)); //D-pad right
         new Trigger(() -> OI.operatorController.getPOV() == 180).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupFloorCube)); //D-pad down
-//        new Trigger(() -> OI.operatorController.getPOV() == 270).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCube)); //D-pad left
+        new Trigger(() -> OI.operatorController.getPOV() == 270).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCube)); //D-pad left
 
 
         new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Forward));
