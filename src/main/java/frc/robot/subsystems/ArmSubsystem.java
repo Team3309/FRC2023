@@ -174,7 +174,7 @@ public class ArmSubsystem extends SubsystemBase
     private final DoubleSolenoid ClampSolenoid;
 
     private ArmPosition DesiredPosition = ArmPosition.Stowed;
-    private ArmDirection DesiredDirection = ArmDirection.Forward;
+    private ArmDirection DesiredDirection = ArmDirection.Backward;
     private ArmPose DesiredPose = null;
 
     public ArmSubsystem()

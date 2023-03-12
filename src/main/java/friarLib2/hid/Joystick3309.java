@@ -49,6 +49,11 @@ public class Joystick3309 extends Joystick {
      * @return the adjusted joystickValue
      */
     public static double applyDeadband (double joystickValue, double deadband) {
-        return (Math.abs(joystickValue) > deadband) ? joystickValue : 0;
+        return (Math.abs(joystickValue) > deadband) ? applyLerp(joystickValue, deadband) : 0;
+    }
+
+    private static double applyLerp (double joystickValue, double deadband) {
+        double result = deadband - deadband*(Math.abs(joystickValue)) - (Math.abs(joystickValue));
+        return (joystickValue > 0 ? -result : result);
     }
 }
