@@ -185,6 +185,7 @@ public class RobotContainer
         AutoChooser.addOption("No Auto", new WaitCommand(0));
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
         AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
+        AutoChooser.addOption("Testpath", GetPathPlannerAutoCommand("Testpath"));
         SmartDashboard.putData(AutoChooser);
     }
 
