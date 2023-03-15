@@ -14,8 +14,16 @@ public class ReverseIntake extends CommandBase {
     }
 
     @Override
-    public void initialize() {
+    public void initialize() 
+    {
         intake.setTopIntakeRoller(-Constants.Intake.TOP_INTAKE_MOTOR_POWER);
         intake.setBottomIntakeRoller(-Constants.Intake.BOTTOM_INTAKE_MOTOR_POWER);
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        intake.setTopIntakeRoller(0);
+        intake.setBottomIntakeRoller(0);
     }
 }
