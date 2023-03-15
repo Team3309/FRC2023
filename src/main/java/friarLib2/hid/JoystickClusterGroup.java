@@ -1,14 +1,14 @@
 package friarLib2.hid;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * Represents one of the six-button clusters on either side of a Joystick
+ * Represents one of the six-button clusters on either side of a Joystick.
  * 
- * Triggers when any of the buttons in that cluster are pressed
+ * <p>
+ * <code>get()</code> returns true when any of the buttons in that cluster are pressed.
  */
-public class JoystickClusterGroup extends Trigger {
+public class JoystickClusterGroup {
 
     Joystick stick;
     Side side;
