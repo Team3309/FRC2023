@@ -8,16 +8,12 @@ import friarLib2.hid.XboxController3309;
 /**
  * Contains static references to controllers and joysticks
  */
-public class OI {
-    // Joysticks
+public class OI
+{
+    // -- Driver
     public static Joystick3309 leftStick = new Joystick3309(0, Constants.JOYSTICK_DEADBAND);
     public static Joystick3309 rightStick = new Joystick3309(1, Constants.JOYSTICK_DEADBAND);
 
-    public static JoystickClusterGroup leftStickLeftCluster = new JoystickClusterGroup(leftStick, JoystickClusterGroup.Side.left);
-    public static JoystickClusterGroup leftStickRightCluster = new JoystickClusterGroup(leftStick, JoystickClusterGroup.Side.right);
-    public static JoystickClusterGroup rightStickLeftCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.left);
-    public static JoystickClusterGroup rightStickRightCluster = new JoystickClusterGroup(rightStick, JoystickClusterGroup.Side.right);
-
-    // Xbox controller
+    // -- Operator
     public static XboxController3309 operatorController = new XboxController3309(2, Constants.XBOX_DEADBAND);
 }

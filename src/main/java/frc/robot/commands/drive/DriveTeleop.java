@@ -55,8 +55,8 @@ public class DriveTeleop extends CommandBase {
     @Override
     public void execute() {
         Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(
-            -OI.leftStick.getXWithDeadband(), 
-            -OI.leftStick.getYWithDeadband()).capMagnitude(1).scale(Constants.Drive.MAX_TELEOP_SPEED);
+            -OI.leftStick.GetXWithDeadband(), 
+            -OI.leftStick.GetYWithDeadband()).capMagnitude(1).scale(Constants.Drive.MAX_TELEOP_SPEED);
 
         if (accelChooser.getSelected()) {
             // Limit the drivebase's acceleration to reduce wear on the swerve modules
@@ -81,7 +81,7 @@ public class DriveTeleop extends CommandBase {
      * @return The rotational speed in radians/second
      */
     protected double calculateRotationalSpeed (Vector3309 translationalSpeeds) {
-        double rotationalSpeed = Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -OI.rightStick.getXWithDeadband();
+        double rotationalSpeed = Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -OI.rightStick.GetXWithDeadband();
 
         return rotationalSpeed;
     }
