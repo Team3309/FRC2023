@@ -72,7 +72,7 @@ public final class Constants {
         /********** Teleop Control Adjustment **********/
         public static final double MAX_TELEOP_SPEED = 6; // Meters/second
         public static final double MAX_TELEOP_ROTATIONAL_SPEED = Math.toRadians(700); // Radians/second
-        public static final double MAX_TELEOP_ACCELERATION = 7; // Maters/second squared
+        public static final double MAX_TELEOP_ACCELERATION = 5; // Maters/second squared
         public static final double MAX_TELEOP_DECELERATION = 11;
 
         /********** Auto Balance  **********/
@@ -95,7 +95,7 @@ public final class Constants {
         
         /******** PID Gains ********/
         public static final PIDParameters JOINT_AB_MOTOR_PID = new PIDParameters(0, "Joint AB Motor PID", 1, 0.008, 10, 0.0, 50);
-        public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.5, 0.01, 2.5, 0.0, 50);
+        public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.2, 0.01, 2.5, 0.0, 50);
         
         /******** Gear Ratios ********/
         public static final double JOINT_AB_MOTOR_GEAR_RATIO = 60;

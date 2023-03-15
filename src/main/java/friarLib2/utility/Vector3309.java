@@ -6,13 +6,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 /**
  * Represents a 2d vector
  */
-public class Vector3309 {
+public class   Vector3309 {
     private double xComponent;
     private double yComponent;
     private Rotation2d direction;
     private double magnitude;
 
     private Vector3309 (double xComponent, double yComponent, Rotation2d direction, double magnitude) {
+
+
+
         this.xComponent = xComponent;
         this.yComponent = yComponent;
         this.direction = direction;

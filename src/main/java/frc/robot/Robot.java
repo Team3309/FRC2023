@@ -38,13 +38,15 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduledCOMPRESSOR
         // commands, running already-scheduled commands, removing finished or interrupted commands,
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
 
         // -- Output the robot orientation to the dashboard
+        SmartDashboard.putNumber("Air Storage Pressure", Pneumatics.getStoragePSI());
+        SmartDashboard.putBoolean("Compressor State", Pneumatics.getCompressorState());
 //        SmartDashboard.putNumber("Robot Yaw", IMU.getRobotYaw().getDegrees());
 //        SmartDashboard.putNumber("Robot Pitch", IMU.getRobotPitch().getDegrees());
 //        SmartDashboard.putNumber("Robot Roll", IMU.getRobotRoll().getDegrees());
@@ -96,6 +98,8 @@ public class Robot extends TimedRobot
         {
             m_autonomousCommand.cancel();
         }
+
+        m_robotContainer.StowArm();
     }
 
     @Override

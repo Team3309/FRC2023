@@ -11,10 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.IMU;
 import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
@@ -191,7 +188,7 @@ public class DriveSubsystem extends SubsystemBase {
               Command_DriveDistance(1.75, 1.45)
             , Command_DriveDistance(0.75, 0.2)
             , Command_DriveDistance(0.5, 1.5).raceWith(Command_WaitUntilFalling())
-            , Command_DriveDistance(-0.5, 0.03)
+            , Command_DriveDistance(-0.5, 0.4)
         );
     }
 

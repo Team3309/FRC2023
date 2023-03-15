@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
@@ -94,16 +96,16 @@ public class ArmSubsystem extends SubsystemBase
             // -- Test
             Map.entry(ArmPosition.Test,
                     new ArmPosePair(
-                            new ArmPose(10000, 5000),
-                            new ArmPose(-10000, -5000)
+                            new ArmPose(20000, 5000),
+                            new ArmPose(-20000, -5000)
                     )),
 
             // -- Pick up form floor
             Map.entry(ArmPosition.PickupFloorCone,
                     new ArmPosePair(
                             new ArmPose(4100, 28000), //Forward
-                            new ArmPose(3000, -21000)  //Backward
-                    )),
+                            new ArmPose(4000, -21000)  //Backward
+                    )),// this is where we change
 
             // -- Pick up form floor
             Map.entry(ArmPosition.PickupFloorCube,
@@ -115,8 +117,8 @@ public class ArmSubsystem extends SubsystemBase
             // -- Pick up from Substation Cone
             Map.entry(ArmPosition.PickupSubstationCone,
                     new ArmPosePair(
-                            new ArmPose(23000, 31000), //Forward
-                            new ArmPose(-23000, 27000)  //Backward
+                            new ArmPose(26000, 31000), //Forward
+                            new ArmPose(-26000, -27000)  //Backward
                     )),
 
             // -- Pick up from Substation Cube
@@ -137,7 +139,7 @@ public class ArmSubsystem extends SubsystemBase
             Map.entry(ArmPosition.ScoreHybrid,
                     new ArmPosePair(
                             new ArmPose(9600, 30000), //Forward
-                            new ArmPose(-300, -21200)  //Backward
+                            new ArmPose(-500, -21200)  //Backward
                     )),
 
             // -- Score mid
@@ -159,14 +161,14 @@ public class ArmSubsystem extends SubsystemBase
     // -- Arm Subsystem
     // -------------------------------------------------------------------------------------------------------------------------------------
 
-    private final boolean AlwaysStow = true;
+    private final boolean AlwaysStow = false;
 
     private final WPI_TalonFX Motor_AB;
     private final WPI_TalonFX Motor_BC;
-    private final Solenoid ClampSolenoid;
+    private final DoubleSolenoid ClampSolenoid;
 
     private ArmPosition DesiredPosition = ArmPosition.Stowed;
-    private ArmDirection DesiredDirection = ArmDirection.Forward;
+    private ArmDirection DesiredDirection = ArmDirection.Backward;
     
     public ArmSubsystem()
     {
@@ -185,13 +187,13 @@ public class ArmSubsystem extends SubsystemBase
                 -30000,
                 5000,
                 20000);
+        
+        ClampSolenoid = new DoubleSolenoid(
+                Constants.PCM_TYPE,
+                1,
+                14
 
-        ClampSolenoid = null;
-//        ClampSolenoid = new Solenoid(
-//                Constants.PCM_CAN_ID,
-//                Constants.PCM_TYPE,
-//                Constants.Arm.CLAMP_SOLENOID_ID
-//        );
+        );
     }
 
     private WPI_TalonFX ConfigureMotor(
@@ -327,9 +329,9 @@ public class ArmSubsystem extends SubsystemBase
         );
     }
     
-    public Command Command_ActuateClamp(boolean close)
+    public Command Command_ActuateClamp(DoubleSolenoid.Value value)
     {
-        return runOnce( () -> ClampSolenoid.set(!close) );
+        return runOnce( () -> ClampSolenoid.set(value) );
     }
 
     public Command Command_ToggleClamp()
