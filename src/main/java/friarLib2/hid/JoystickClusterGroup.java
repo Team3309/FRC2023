@@ -26,7 +26,8 @@ public class JoystickClusterGroup extends Trigger {
     public static final int RIGHT_CLUSTER_5_ID = 9;
     public static final int RIGHT_CLUSTER_6_ID = 10;
 
-    public JoystickClusterGroup(Joystick stick, Side side) {
+    public JoystickClusterGroup(Joystick stick, Side side)
+    {
         this.stick = stick;
         this.side = side;
     }

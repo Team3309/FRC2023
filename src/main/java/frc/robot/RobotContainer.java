@@ -67,8 +67,8 @@ public class RobotContainer
         // -- Clamp
 //        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
 //        new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
-        new Trigger(OI.operatorController::IsLeftTriggerPressed).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
-        new Trigger(OI.operatorController::IsRightTriggerPressed).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
+        new Trigger(OI.operatorController::IsLeftTriggerPressed).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kForward));
+        new Trigger(OI.operatorController::IsRightTriggerPressed).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
 //        new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ToggleClampCommand());
 
         // -- Auto Turn
@@ -78,9 +78,9 @@ public class RobotContainer
         new Trigger(OI.leftStick::getTop).whileTrue(new InstantCommand(IMU::zeroIMU));
 
         //Zeroing
-        new Trigger(OI.operatorController::getLeftStickButton).whileTrue(Arm.ZeroArmCommand().ignoringDisable(true));
+        new Trigger(OI.operatorController::getLeftStickButton).whileTrue(Arm.Command_ZeroArm().ignoringDisable(true));
 
-     //   new Trigger(OI.leftStick::getTrigger).onTrue(Drive.AutoBalanceCommand());
+        //new Trigger(OI.leftStick::getTrigger).onTrue(Drive.Command_AutoBalance());
 
 
 
@@ -91,39 +91,38 @@ public class RobotContainer
         // ----------------------------------------------------------------------------------------
 
         // -- Arm
-        new Trigger(OI.operatorController::getAButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Stowed));
-        new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreHybrid));
-//        new Trigger(OI.operatorController::getBButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.Test));
-        new Trigger(OI.operatorController::getXButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.operatorController::getYButton).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.ScoreTop));
-        new Trigger(() -> OI.operatorController.getPOV() == 0).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCone)); //D-pad up
-        new Trigger(() -> OI.operatorController.getPOV() == 90).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupFloorCone)); //D-pad right
-        new Trigger(() -> OI.operatorController.getPOV() == 180).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupFloorCube)); //D-pad down
-        new Trigger(() -> OI.operatorController.getPOV() == 270).onTrue(Arm.SetPositionCommand(ArmSubsystem.ArmPosition.PickupSubstationCube)); //D-pad left
+        new Trigger(OI.operatorController::getAButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.operatorController::getBButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreHybrid));
+        //new Trigger(OI.operatorController::getBButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Test));
+        new Trigger(OI.operatorController::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+        new Trigger(OI.operatorController::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        new Trigger(() -> OI.operatorController.getPOV() == 0).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone)); //D-pad up
+        new Trigger(() -> OI.operatorController.getPOV() == 90).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone)); //D-pad right
+        new Trigger(() -> OI.operatorController.getPOV() == 180).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCube)); //D-pad down
+        new Trigger(() -> OI.operatorController.getPOV() == 270).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCube)); //D-pad left
 
 
-//        new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Forward));
-        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.SetDirectionCommand(ArmSubsystem.ArmDirection.Backward));
+        //new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
+        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
 
-        //new Trigger(OI.operatorController::getBackButton).onTrue(Arm.OutputArmPositionCommand());
+        //new Trigger(OI.operatorController::getBackButton).onTrue(Arm.Command_OutputArmPosition());
 
         // -- Intake
         //new Trigger(OI.XboxController::leftBumper).whileTrue(new ActivateRollers());
 
         // -- AutoBalance
-       // new Trigger(OI.rightStick::getTrigger).onTrue(Drive.AutoBalanceCommand());
+        //new Trigger(OI.rightStick::getTrigger).onTrue(Drive.Command_AutoBalance());
 
         // -- Vision
         new Trigger(OI.operatorController::getBackButton).onTrue(LimelightVision.SetPipelineCommand(0));
         new Trigger(OI.operatorController::getStartButton).onTrue(LimelightVision.SetPipelineCommand(1));
 
         // -- Turntable
-        // new Trigger(OI.operatorController::getAButton).whileTrue(new InstantCommand(new TurntableSubsystem()::defaultPosition));
 
         // -- Reset Odometry
 
         // -- Re-zero the arm (for debugging)
-     //   new Trigger(OI.operatorController::getStartButton).whileTrue(Arm.ZeroArmCommand());
+        //new Trigger(OI.operatorController::getStartButton).whileTrue(Arm.Command_ZeroArm());
     }
 
 
@@ -156,8 +155,8 @@ public class RobotContainer
         eventMap.put("Wait", new WaitCommand(0.5));
 
 
-        eventMap.put("Clamp_Close", Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
-        eventMap.put("Clamp_Open", Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
+        eventMap.put("Clamp_Close", Arm.Command_ActuateClamp(DoubleSolenoid.Value.kForward));
+        eventMap.put("Clamp_Open", Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
 
         // -- Builder
         AutoBuilder = new SwerveAutoBuilder(
@@ -186,11 +185,11 @@ public class RobotContainer
 //        AutoChooser.addOption("CurveTestPath", new FollowTrajectory(Drive, "CurveTestPath", true));
 //        AutoChooser.addOption("AutoBalancePath", new AutoBalancePath(Drive));
 //        AutoChooser.addOption("Coop And Engage", GetPathPlannerAutoCommand("Coop&Engage"));
-//        AutoChooser.addOption("AutoBalance", Drive.AutoBalanceCommand());
+//        AutoChooser.addOption("AutoBalance", Drive.Command_AutoBalance());
         AutoChooser.addOption("No Auto", new WaitCommand(0));
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
         AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
-        AutoChooser.addOption("SimpleEngage", Drive.AutoBalanceCommand());
+        AutoChooser.addOption("SimpleEngage", Drive.Command_AutoBalance());
         SmartDashboard.putData(AutoChooser);
     }
 
