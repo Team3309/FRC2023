@@ -52,7 +52,7 @@ public class RobotContainer
         return AutoChooser.getSelected();
     }
 
-    public void OnDisabledInit()
+    public void StowArm()
     {
         Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed);
     }
@@ -110,6 +110,11 @@ public class RobotContainer
     private void SetDefaultCommands()
     {
         Drive.setDefaultCommand(new DriveTeleop(Drive));
+        
+        Arm.setDefaultCommand(
+             Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed)
+            .alongWith(Commands.run(() -> {}))
+        );
     }
 
 
