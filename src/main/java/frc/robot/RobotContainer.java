@@ -116,7 +116,7 @@ public class RobotContainer
         // -- Vision
         new Trigger(OI.operatorController::getBackButton).onTrue(LimelightVision.SetPipelineCommand(0));
         new Trigger(OI.operatorController::getStartButton).onTrue(LimelightVision.SetPipelineCommand(1));
-
+        new triger(OI.operatorController::getRightStickButton).onTrue(LimelightVision.SetPipelineCommand(2))
         // -- Turntable
 
         // -- Reset Odometry
