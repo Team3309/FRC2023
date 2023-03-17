@@ -1,12 +1,7 @@
 package friarLib2.hid;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.OI;
-import frc.robot.subsystems.ArmSubsystem;
 import friarLib2.math.FriarMath;
-import friarLib2.utility.Vector3309;
-
-import java.security.PublicKey;
 
 /**
  * Represents an Xbox controller, but with built in deadband calculation
