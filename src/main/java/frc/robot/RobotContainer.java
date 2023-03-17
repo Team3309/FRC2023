@@ -64,17 +64,17 @@ public class RobotContainer
 
         
         // -- Clamp
-        //new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
-        //new Trigger(OI.rightStick::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
-        //new Trigger(OI.rightStick::getTrigger).onTrue(Arm.ToggleClampCommand());
+        //new Trigger(OI.DriverRight::getTrigger).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kForward));
+        //new Trigger(OI.DriverRight::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
+        //new Trigger(OI.DriverRight::getTrigger).onTrue(Arm.ToggleClampCommand());
 
         // -- Auto Turn
-        new Trigger(OI.rightStick::getTrigger).whileTrue(new TurnInDirectionOfTarget(Drive));
+        new Trigger(OI.DriverRight::getTrigger).whileTrue(new TurnInDirectionOfTarget(Drive));
 
         //Zero IMU
-        new Trigger(OI.leftStick::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
+        new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
 
-        //new Trigger(OI.leftStick::getTrigger).onTrue(Drive.Command_AutoBalance());
+        //new Trigger(OI.DriverLeft::getTrigger).onTrue(Drive.Command_AutoBalance());
 
         
 
@@ -85,30 +85,30 @@ public class RobotContainer
         boolean armTest = false;
         
         // -- Arm
-        new Trigger(OI.operatorController::getAButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
-        new Trigger(OI.operatorController::getBButton).onTrue(Arm.Command_SetPosition(armTest ? ArmSubsystem.ArmPosition.Test : ArmSubsystem.ArmPosition.ScoreHybrid));
-        new Trigger(OI.operatorController::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.operatorController::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        new Trigger(OI.Operator::getAButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
+        new Trigger(OI.Operator::getBButton).onTrue(Arm.Command_SetPosition(armTest ? ArmSubsystem.ArmPosition.Test : ArmSubsystem.ArmPosition.ScoreHybrid));
+        new Trigger(OI.Operator::getXButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+        new Trigger(OI.Operator::getYButton).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
         
-        new Trigger(OI.operatorController::DPad_Up).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone));
-        new Trigger(OI.operatorController::DPad_Right).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone));
-        new Trigger(OI.operatorController::DPad_Down).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCube));
-        new Trigger(OI.operatorController::DPad_Left).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCube));
+        new Trigger(OI.Operator::DPad_Up).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone));
+        new Trigger(OI.Operator::DPad_Right).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone));
+        new Trigger(OI.Operator::DPad_Down).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCube));
+        new Trigger(OI.Operator::DPad_Left).onTrue(Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCube));
         
-        new Trigger(OI.operatorController::getLeftBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
-        new Trigger(OI.operatorController::getRightBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
+        new Trigger(OI.Operator::getLeftBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
+        new Trigger(OI.Operator::getRightBumper).onTrue(Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
 
         // -- Clamp
-        new Trigger(OI.operatorController::LeftTrigger).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kForward));
-        new Trigger(OI.operatorController::RightTrigger).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
+        new Trigger(OI.Operator::LeftTrigger).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kForward));
+        new Trigger(OI.Operator::RightTrigger).onTrue(Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
         
         // -- Vision
-        new Trigger(OI.operatorController::getBackButton).onTrue(LimelightVision.SetPipelineCommand(0));
-        new Trigger(OI.operatorController::getStartButton).onTrue(LimelightVision.SetPipelineCommand(1));
+        new Trigger(OI.Operator::getBackButton).onTrue(LimelightVision.SetPipelineCommand(0));
+        new Trigger(OI.Operator::getStartButton).onTrue(LimelightVision.SetPipelineCommand(1));
 
         // -- Utility
-        new Trigger(OI.operatorController::getRightStickButton).onTrue(Arm.Command_OutputArmPosition());
-        new Trigger(OI.operatorController::getLeftStickButton).onTrue(Arm.Command_ZeroArm());
+        new Trigger(OI.Operator::getRightStickButton).onTrue(Arm.Command_OutputArmPosition());
+        new Trigger(OI.Operator::getLeftStickButton).onTrue(Arm.Command_ZeroArm());
     }
 
 
