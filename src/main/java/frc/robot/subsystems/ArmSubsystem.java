@@ -9,8 +9,6 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
@@ -31,7 +29,6 @@ public class ArmSubsystem extends SubsystemBase
         PickupFloorCube,
         PickupSubstationCone,
         PickupSubstationCube,
-        PickupTurntable,
         ScoreHybrid,
         ScoreMid,
         ScoreTop,
@@ -43,16 +40,51 @@ public class ArmSubsystem extends SubsystemBase
         Forward,
         Backward,
     }
+
+    public enum Joint
+    {
+        AB,
+        BC,
+    }
     
     private static class ArmPose
     {
-        public double UpperArm;
-        public double LowerArm;
+        private static final double AB_EncoderCountsPer360 = 120000;
+        private static final double BC_EncoderCountsPer360 = 90000;
 
+        public static double PositionToRadians(double position, Joint joint)
+        {
+            double conversion = joint == Joint.AB ? AB_EncoderCountsPer360 : BC_EncoderCountsPer360;
+            return position / conversion * 2;
+        }
+
+        public static double RadiansToPosition(double radians, Joint joint)
+        {
+            double conversion = joint == Joint.AB ? AB_EncoderCountsPer360 : BC_EncoderCountsPer360;
+            return radians * conversion / 2;
+        }
+
+        private double _UpperArm;
+        private double _LowerArm;
+
+        /**
+         * @param upperArm position in radians (positive is forward)
+         * @param lowerArm position in radians (positive is forward)
+         */
         public ArmPose(double upperArm, double lowerArm)
         {
-            UpperArm = upperArm;
-            LowerArm = lowerArm;
+            _UpperArm = upperArm;
+            _LowerArm = lowerArm;
+        }
+
+        public double UpperArmPosition()
+        {
+            return RadiansToPosition(_UpperArm, Joint.AB);
+        }
+
+        public double LowerArmPosition()
+        {
+            return RadiansToPosition(_LowerArm, Joint.BC);
         }
     }
 
@@ -81,9 +113,9 @@ public class ArmSubsystem extends SubsystemBase
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Static Data
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private static final double StowAngleFront = 9900;
-    private static final double StowAngleBack = -6000;
-    
+    private static final ArmPose StowAngleFrontPose = new ArmPose(0.171, 0);
+    private static final ArmPose StowAngleBackPose = new ArmPose(-0.071, 0);
+
     private static final Map<ArmPosition, ArmPosePair> Poses = Map.ofEntries(
 
             // -- Stowed Arm
@@ -96,40 +128,29 @@ public class ArmSubsystem extends SubsystemBase
             // -- Test
             Map.entry(ArmPosition.Test,
                     new ArmPosePair(
-                            new ArmPose(20000, 5000),
-                            new ArmPose(-20000, -5000)
+                            new ArmPose(0.2, 0.2),
+                            new ArmPose(-0.2, -0.2)
                     )),
 
             // -- Pick up form floor
-            Map.entry(ArmPosition.PickupFloorCone,
+            Map.entry(ArmPosition.PickupFloorCone, // Forward is peg
                     new ArmPosePair(
-                            new ArmPose(4100, 28000), //Forward
-                            new ArmPose(4000, -21000)  //Backward
-                    )),// this is where we change
-
-            // -- Pick up form floor
+                            new ArmPose(-0.056, 0.385), //Forward
+                            new ArmPose(0.058, -0.466)  //Backward
+                    )),
             Map.entry(ArmPosition.PickupFloorCube,
                     new ArmPosePair(
-                            new ArmPose(11000, 43000), //Forward
-                            new ArmPose(-2500, -31000)  //Backward
+                            new ArmPose(0, 0), //Forward
+                            new ArmPose(0, 0)  //Backward
                     )),
 
             // -- Pick up from Substation Cone
             Map.entry(ArmPosition.PickupSubstationCone,
                     new ArmPosePair(
-                            new ArmPose(26000, 31000), //Forward
-                            new ArmPose(-26000, -27000)  //Backward
+                            new ArmPose(0.363, 0.599), //Forward
+                            new ArmPose(-0.366, -0.583)  //Backward
                     )),
-
-            // -- Pick up from Substation Cube
             Map.entry(ArmPosition.PickupSubstationCube,
-                    new ArmPosePair(
-                            new ArmPose(23000, 30000), //Forward
-                            new ArmPose(-24000, -33000)  //Backward
-                    )),
-
-            // -- Pick up from Turntable
-            Map.entry(ArmPosition.PickupTurntable,
                     new ArmPosePair(
                             new ArmPose(0, 0), //Forward
                             new ArmPose(0, 0)  //Backward
@@ -138,22 +159,22 @@ public class ArmSubsystem extends SubsystemBase
             // -- Score hybrid
             Map.entry(ArmPosition.ScoreHybrid,
                     new ArmPosePair(
-                            new ArmPose(9600, 30000), //Forward
-                            new ArmPose(-500, -21200)  //Backward
+                            new ArmPose(0.147, 0.761), //Forward
+                            new ArmPose(0, -0.53)  //Backward
                     )),
 
             // -- Score mid
             Map.entry(ArmPosition.ScoreMid,
                     new ArmPosePair(
-                            new ArmPose(25000, 35000), //Forward
-                            new ArmPose(-20000, -20500)  //Backward
+                            new ArmPose(0.351, 0.706), //Forward
+                            new ArmPose(-0.256, -0.398)  //Backward
                     )),
 
             // -- Score top
             Map.entry(ArmPosition.ScoreTop,
                     new ArmPosePair(
-                            new ArmPose(-32300, -40250), //Forward
-                            new ArmPose(-32300, -40250)  //Backward
+                            new ArmPose(0, 0), //Forward
+                            new ArmPose(-0.461, -0.768)  //Backward
                     ))
     );
     
@@ -172,19 +193,20 @@ public class ArmSubsystem extends SubsystemBase
     
     public ArmSubsystem()
     {
+        // TODO: Update soft limits to use radians!!
         Motor_AB = ConfigureMotor(Constants.Arm.AB_MOTOR_ID,
                 Constants.Arm.JOINT_AB_MOTOR_PID,
                 0.75,
-                35000,
-                -33500,
+                ArmPose.RadiansToPosition(0.523, Joint.AB),
+                ArmPose.RadiansToPosition(-0.5, Joint.AB),
                 6000,
                 20000);
 
         Motor_BC = ConfigureMotor(Constants.Arm.BC_MOTOR_ID,
                 Constants.Arm.JOINT_BC_MOTOR_PID,
                 1.0,
-                30000,
-                -30000,
+                ArmPose.RadiansToPosition(1, Joint.BC),
+                ArmPose.RadiansToPosition(-1, Joint.BC),
                 5000,
                 20000);
         
@@ -260,7 +282,7 @@ public class ArmSubsystem extends SubsystemBase
     private boolean DoesPoseRequireStowingLowerArm(ArmPose targetPose)
     {
         double currentPosition = Motor_AB.getActiveTrajectoryPosition();
-        double targetPosition = targetPose.UpperArm;
+        double targetPosition = targetPose.UpperArmPosition();
 
         System.out.printf("Current: %.2f Target: %.2f\n", currentPosition, targetPosition);
 
@@ -268,17 +290,17 @@ public class ArmSubsystem extends SubsystemBase
         ArmDirection targetDirection;
 
         // -- Figure out the direction for the current position
-        if (currentPosition > StowAngleFront)
+        if (currentPosition > StowAngleFrontPose.UpperArmPosition())
             currentDirection = ArmDirection.Forward;
-        else if (currentPosition < StowAngleBack)
+        else if (currentPosition < StowAngleBackPose.UpperArmPosition())
             currentDirection = ArmDirection.Backward;
         else
             return true;
         
         // -- Figure out the direction for the target position
-        if (targetPosition > StowAngleFront)
+        if (targetPosition > StowAngleFrontPose.UpperArmPosition())
             targetDirection = ArmDirection.Forward;
-        else if (targetPosition <  StowAngleBack)
+        else if (targetPosition < StowAngleBackPose.UpperArmPosition())
             targetDirection = ArmDirection.Backward;
         else
             return true;
@@ -352,7 +374,11 @@ public class ArmSubsystem extends SubsystemBase
     public Command Command_OutputArmPosition()
     {
         return runOnce(() ->
-                System.out.printf("Upper: %.2f, Lower: %.2f\n", Motor_AB.getSelectedSensorPosition(), Motor_BC.getSelectedSensorPosition())
+                System.out.printf("Upper: %.3f (%.0f), Lower: %.3f (%.0f)\n"
+                        , ArmPose.PositionToRadians(Motor_AB.getSelectedSensorPosition(), Joint.AB)
+                        , Motor_AB.getSelectedSensorPosition()
+                        , ArmPose.PositionToRadians(Motor_BC.getSelectedSensorPosition(), Joint.BC)
+                        , Motor_BC.getSelectedSensorPosition())
         ).ignoringDisable(true);
     }
 
@@ -388,24 +414,23 @@ public class ArmSubsystem extends SubsystemBase
         
         Command Debug = runOnce(() -> System.out.printf("Move Joint\n  AB %.2f -> %.2f\n  BC: %.2f -> %.2f\n"
                 , Motor_AB.getSelectedSensorPosition(0)
-                , DesiredPose.get().UpperArm
+                , DesiredPose.get().UpperArmPosition()
                 , Motor_BC.getSelectedSensorPosition(0)
-                , DesiredPose.get().LowerArm
+                , DesiredPose.get().LowerArmPosition()
             ));
+
         
         Command Move =
             run(() ->
             {
                 if (moveAB)
                 {
-                    //System.out.printf("Driving motor %d to position %f\n", Motor_AB.getDeviceID(), DesiredPose.get().UpperArm);
-                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.get().UpperArm);
+                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.get().UpperArmPosition());
                 }
     
                 if (moveBC)
                 {
-                    //System.out.printf("Driving motor %d to position %f\n", Motor_BC.getDeviceID(), DesiredPose.get().LowerArm);
-                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.get().LowerArm);
+                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.get().LowerArmPosition());
                 }
             })
             .until(() ->
@@ -416,13 +441,13 @@ public class ArmSubsystem extends SubsystemBase
                 if (moveAB)
                 {
                     //System.out.printf("Motor %d at position %f\n", Motor_AB.getDeviceID(), Motor_AB.getActiveTrajectoryPosition());
-                    abAtTarget = Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.get().UpperArm) < Arm.TargetThreshold;
+                    abAtTarget = Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.get().UpperArmPosition()) < Arm.TargetThreshold;
                 }
 
                 if (moveBC)
                 {
                     //System.out.printf("Motor %d at position %f\n", Motor_BC.getDeviceID(), Motor_BC.getActiveTrajectoryPosition());
-                    bcAtTarget = Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.get().LowerArm) < Arm.TargetThreshold;
+                    bcAtTarget = Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.get().LowerArmPosition()) < Arm.TargetThreshold;
                 }
 
                 return abAtTarget && bcAtTarget;
