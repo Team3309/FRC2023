@@ -167,7 +167,7 @@ public class ArmSubsystem extends SubsystemBase
             Map.entry(ArmPosition.ScoreMid,
                     new ArmPosePair(
                             new ArmPose(0.351, 0.706), //Forward
-                            new ArmPose(-0.256, -0.398)  //Backward
+                            new ArmPose(-0.297, -0.407)  //Backward
                     )),
 
             // -- Score top
@@ -214,8 +214,10 @@ public class ArmSubsystem extends SubsystemBase
                 Constants.PCM_TYPE,
                 1,
                 14
-
         );
+
+        // Default to closed
+        ClampSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
     private WPI_TalonFX ConfigureMotor(
@@ -353,7 +355,7 @@ public class ArmSubsystem extends SubsystemBase
     
     public Command Command_ActuateClamp(DoubleSolenoid.Value value)
     {
-        return runOnce( () -> ClampSolenoid.set(value) );
+        return runOnce(() -> ClampSolenoid.set(value));
     }
 
     public Command Command_ToggleClamp()

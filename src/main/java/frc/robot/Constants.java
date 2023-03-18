@@ -28,7 +28,7 @@ public final class Constants {
     *  For Constants that are not in a subsystem
     */
     
-    public static final double JOYSTICK_DEADBAND = 0.09; // TODO a lot of the constants in this file are placeholders, remainder to change them
+    public static final double JOYSTICK_DEADBAND = 0.1;
     public static final double XBOX_DEADBAND = 0.05;
     
     public static final int PCM_CAN_ID = 1;
@@ -72,7 +72,7 @@ public final class Constants {
         /********** Teleop Control Adjustment **********/
         public static final double MAX_TELEOP_SPEED = 6; // Meters/second
         public static final double MAX_TELEOP_ROTATIONAL_SPEED = Math.toRadians(700); // Radians/second
-        public static final double MAX_TELEOP_ACCELERATION = 5; // Maters/second squared
+        public static final double MAX_TELEOP_ACCELERATION = 10; // Maters/second squared
         public static final double MAX_TELEOP_DECELERATION = 11;
 
         /********** Auto Balance  **********/

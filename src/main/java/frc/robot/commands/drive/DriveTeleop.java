@@ -1,6 +1,7 @@
 /*This NEEDS to be rewriten */
 package frc.robot.commands.drive;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,8 +32,11 @@ public class DriveTeleop extends CommandBase {
 
     protected DriveSubsystem drive;
 
-    private static final DoubleSlewRateLimiter xAccelLimiter = new DoubleSlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION, Constants.Drive.MAX_TELEOP_DECELERATION);
-    private static final DoubleSlewRateLimiter yAccelLimiter = new DoubleSlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION, Constants.Drive.MAX_TELEOP_DECELERATION);
+    //private static final DoubleSlewRateLimiter xAccelLimiter = new DoubleSlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION, Constants.Drive.MAX_TELEOP_DECELERATION);
+    //private static final DoubleSlewRateLimiter yAccelLimiter = new DoubleSlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION, Constants.Drive.MAX_TELEOP_DECELERATION);
+
+    private static final SlewRateLimiter xAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
+    private static final SlewRateLimiter yAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
 
     /** Menu on the dashboard to toggle acceleration limits */
     static SendableChooser<Boolean> accelChooser = new SendableChooser<>();
@@ -80,10 +84,9 @@ public class DriveTeleop extends CommandBase {
      * @param translationalSpeeds
      * @return The rotational speed in radians/second
      */
-    protected double calculateRotationalSpeed (Vector3309 translationalSpeeds) {
-        double rotationalSpeed = Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -OI.DriverRight.GetXWithDeadband();
-
-        return rotationalSpeed;
+    protected double calculateRotationalSpeed (Vector3309 translationalSpeeds)
+    {
+        return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -OI.DriverRight.GetXWithDeadband();
     }
 
     @Override

@@ -1,8 +1,6 @@
 package frc.robot.Swerve;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -11,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import friarLib2.hardware.SwerveModule;
 import friarLib2.math.CTREModuleState;
 import friarLib2.utility.PIDParameters;
@@ -60,8 +59,8 @@ public class SwerveModule3309 implements SwerveModule {
 
     /********** Member Variables **********/
     public String name; // Used for displaying values on SmartDashboard
-    private final WPI_TalonFX driveMotor;
-    private final WPI_TalonFX steeringMotor;
+    private WPI_TalonFX driveMotor;
+    private WPI_TalonFX steeringMotor;
     private final CANCoder steeringEncoder;
 
     /** 
@@ -85,11 +84,11 @@ public class SwerveModule3309 implements SwerveModule {
      * @param encoderID CAN ID for the module's CANCoder
      * @param name The module's name (used when outputting to SmartDashboard)
      */
-    public SwerveModule3309 (double steeringOffset, int driveMotorID, int steeringMotorID, int encoderID, String name) {
+    public SwerveModule3309 (double steeringOffset, int driveMotorID, int steeringMotorID, int encoderID, String name)
+    {
         this.name = name;
-        driveMotor = new WPI_TalonFX(driveMotorID);
-        steeringMotor = new WPI_TalonFX(steeringMotorID);
-        configMotors();
+
+        ConfigMotors(driveMotorID, steeringMotorID);
 
         this.steeringOffset = steeringOffset;
 
@@ -113,24 +112,79 @@ public class SwerveModule3309 implements SwerveModule {
      * @param IDs The collection of CAN ID's for the module
      * @param name The module's name (used when outputting to SmartDashboard)
      */
-    public SwerveModule3309 (double steeringOffset, SwerveCANIDs IDs, String name) {
+    public SwerveModule3309 (double steeringOffset, SwerveCANIDs IDs, String name)
+    {
         this(steeringOffset, IDs.driveMotorID, IDs.steeringMotorID, IDs.CANCoderID, name);
     }
 
     /**
      * Sets the motor PID values to those which will make the robot move the way we want.
      */
-    public void configMotors () {
-        driveMotor.configFactoryDefault();
-        DRIVE_PID_GAINS.configureMotorPID(driveMotor);
-        driveMotor.config_IntegralZone(0, 500);
-        driveMotor.setNeutralMode(NeutralMode.Brake);
+    public void ConfigMotors(int driveMotorID, int steeringMotorID) {
+        driveMotor = ConfigureMotor(driveMotorID,
+                DRIVE_PID_GAINS,
+                1,
+                10000,
+                10000);
         driveMotor.configSupplyCurrentLimit(DRIVE_MOTOR_CURRENT_LIMIT);
 
-        steeringMotor.configFactoryDefault();
-        STEERING_PID_GAINS.configureMotorPID(steeringMotor);
-        steeringMotor.config_IntegralZone(0, 500);
-        steeringMotor.setNeutralMode(NeutralMode.Brake);
+        steeringMotor = ConfigureMotor(steeringMotorID,
+                STEERING_PID_GAINS,
+                1,
+                10000,
+                10000);
+    }
+
+    private WPI_TalonFX ConfigureMotor(
+              int motorId
+            , PIDParameters pidConstants
+            , double peakOutput
+            , double acceleration
+            , double cruise)
+    {
+        WPI_TalonFX motor = new WPI_TalonFX(motorId);
+
+        // --Factory default hardware to prevent unexpected behavior
+        motor.configFactoryDefault();
+
+        // -- Configure Sensor Source for Pirmary PID
+        motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TIMEOUT_MS);
+
+        // -- set deadband to super small 0.001 (0.1 %).
+        //    The default deadband is 0.04 (4 %)
+        motor.configNeutralDeadband(0.001, Constants.TIMEOUT_MS);
+        motor.setNeutralMode(NeutralMode.Brake);
+
+        //motor.setSensorPhase(false);
+        //motor.setInverted(true);
+
+        // -- Set relevant frame periods to be at least as fast as periodic rate
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.TIMEOUT_MS);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.TIMEOUT_MS);
+
+        // -- Set the peak and nominal outputs
+        motor.configNominalOutputForward(0, Constants.TIMEOUT_MS);
+        motor.configNominalOutputReverse(0, Constants.TIMEOUT_MS);
+        motor.configPeakOutputForward(peakOutput, Constants.TIMEOUT_MS);
+        motor.configPeakOutputReverse(-peakOutput, Constants.TIMEOUT_MS);
+
+        // -- Motion Magic
+        motor.selectProfileSlot(pidConstants.GetSlotIndex(), 0);
+        motor.config_kP(pidConstants.GetSlotIndex(), pidConstants.GetP(), Constants.TIMEOUT_MS);
+        motor.config_kI(pidConstants.GetSlotIndex(), pidConstants.GetI(), Constants.TIMEOUT_MS);
+        motor.config_kD(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
+        motor.config_kF(pidConstants.GetSlotIndex(), pidConstants.GetF(), Constants.TIMEOUT_MS);
+        motor.config_IntegralZone(pidConstants.GetSlotIndex(), pidConstants.GetIZone(), Constants.TIMEOUT_MS);
+
+        // -- Ramp speeds
+        motor.configMotionCruiseVelocity(cruise, Constants.TIMEOUT_MS);
+        motor.configMotionAcceleration(acceleration, Constants.TIMEOUT_MS);
+        motor.configMotionSCurveStrength(4);
+
+        // -- Zero the sensor once on robot boot up
+        motor.setSelectedSensorPosition(0, 0, Constants.TIMEOUT_MS);
+
+        return motor;
     }
 
     /**
@@ -167,6 +221,11 @@ public class SwerveModule3309 implements SwerveModule {
             Conversions.encoderTicksToMeters(driveMotor.getSelectedSensorPosition()), 
             Rotation2d.fromDegrees(getSteeringDegreesFromFalcon())
         );
+    }
+
+    @Override
+    public CANCoder GetCanCoder() {
+        return steeringEncoder;
     }
 
     public void zeroPosition () {

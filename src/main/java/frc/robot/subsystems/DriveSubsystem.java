@@ -1,14 +1,13 @@
 /*Shouldn't need major changes */
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -36,7 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Initialize the swerve modules, imu, and Kinematics/Odometry objects
      */
-    public DriveSubsystem() {
+    public DriveSubsystem()
+    {
         frontLeftModule = new SwerveModule3309(225, FRONT_LEFT_MODULE_IDS, "Front left");
         frontRightModule = new SwerveModule3309(315, FRONT_RIGHT_MODULE_IDS, "Front right");
         backLeftModule = new SwerveModule3309(135, BACK_LEFT_MODULE_IDS, "Back left");
@@ -62,6 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         IMU.zeroIMU();
 
+        SmartDashboard.putData("Calibrate Swerve", Command_CalibrateSwerve());
         SmartDashboard.putData("Odometry", field);
     }
 
@@ -177,12 +178,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
-
-
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public Command Command_AutoBalance()
+    public CommandBase Command_AutoBalance()
     {
         return Commands.sequence(
               Command_DriveDistance(1.75, 1.45)
@@ -192,13 +191,13 @@ public class DriveSubsystem extends SubsystemBase {
         );
     }
 
-    public Command Command_DriveStraight(double metersPerSecond)
+    public CommandBase Command_DriveStraight(double metersPerSecond)
     {
         return run( () -> setChassisSpeeds(new ChassisSpeeds(metersPerSecond, 0, 0)) )
                 .beforeStarting(new PrintCommand(System.currentTimeMillis() + "  Drive Straight " + metersPerSecond));
     }
 
-    public Command Command_DriveDistance(double metersPerSecond, double distanceInMeters)
+    public CommandBase Command_DriveDistance(double metersPerSecond, double distanceInMeters)
     {
         final AtomicReference<Pose2d> startingPose = new AtomicReference<>(); // wrapper to allow us to change captured object inside a lambda
 
@@ -218,7 +217,7 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    private Command Command_WaitUntilFalling()
+    private CommandBase Command_WaitUntilFalling()
     {
         final int numSamples = 8;
         AtomicReference<LinearFilter> filter = new AtomicReference<>();
@@ -243,5 +242,35 @@ public class DriveSubsystem extends SubsystemBase {
                     return filtered < CHARGE_STATION_TILT_ANGLE;
                 })
         );
+    }
+
+    private CommandBase Command_CalibrateSwerve()
+    {
+        return runOnce(() ->
+        {
+            CANCoder[] canCoders = { frontLeftModule.GetCanCoder(), frontRightModule.GetCanCoder(), backLeftModule.GetCanCoder(), backRightModule.GetCanCoder() };
+
+            for (CANCoder canCoder : canCoders)
+            {
+                int id = canCoder.getDeviceID();
+
+                canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+                canCoder.configMagnetOffset(0);
+
+                double absolutePosition = canCoder.getAbsolutePosition();
+                int canCoderSlotValue = (int) (absolutePosition * 100 + 0.5);
+
+                System.out.println(
+                        "Setting custom parameter on encoder " + id +
+                                " to " + canCoderSlotValue +
+                                " (absolute position = " + absolutePosition + " degrees)"
+                );
+
+                ErrorCode e = canCoder.configSetCustomParam(canCoderSlotValue, 0);
+                if (e != ErrorCode.OK) {
+                    System.out.println("Error setting custom parameter on encoder " + id);
+                }
+            }
+        });
     }
 }
