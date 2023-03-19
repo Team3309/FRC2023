@@ -33,8 +33,13 @@ public class DriverCamera implements IVisionCamera {
     public void setLights(LedMode mode) {
         switch (mode) {
             case off:
+
         }
     }
 
+    @Override
+    public int camMode() {
+        NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(1);
+    }
 }
 

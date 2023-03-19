@@ -2,6 +2,7 @@ package friarLib2.vision;
 
 import java.util.List;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -84,5 +85,10 @@ public class PhotonCameraWrapper implements IVisionCamera {
             case blink: camera.setLED(VisionLEDMode.kBlink); break;
             case currentPipeline: camera.setLED(VisionLEDMode.kDefault); break;
         }
+    }
+
+    @Override
+    public int camMode() {
+        NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(0);
     }
 }

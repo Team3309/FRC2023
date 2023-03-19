@@ -12,4 +12,5 @@ public interface IVisionCamera {
     int getPipeline ();
     void setPipeline (int index);
     void setLights (LedMode mode);
+    int camMode ();
 }
