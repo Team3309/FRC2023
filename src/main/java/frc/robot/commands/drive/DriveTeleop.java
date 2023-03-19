@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.IMU;
 import frc.robot.OI;
 import frc.robot.subsystems.DriveSubsystem;
+import friarLib2.math.FriarMath;
 import friarLib2.utility.DoubleSlewRateLimiter;
 import friarLib2.utility.Vector3309;
 
@@ -29,6 +30,8 @@ import friarLib2.utility.Vector3309;
  * independently (based on vision data for example).
  */
 public class DriveTeleop extends CommandBase {
+
+    private static final double OutputRange = 0.2;
 
     protected DriveSubsystem drive;
 
@@ -58,9 +61,18 @@ public class DriveTeleop extends CommandBase {
 
     @Override
     public void execute() {
-        Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(
-            -OI.DriverLeft.GetXWithDeadband(), 
-            -OI.DriverLeft.GetYWithDeadband()).capMagnitude(1).scale(Constants.Drive.MAX_TELEOP_SPEED);
+        double x = OI.DriverLeft.GetXWithDeadband();
+        double y = OI.DriverLeft.GetYWithDeadband();
+
+        if (OI.DriverRight.getTrigger())
+        {
+            x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+            y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
+        }
+
+        Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(-x, -y)
+                .capMagnitude(1)
+                .scale(Constants.Drive.MAX_TELEOP_SPEED);
 
         if (accelChooser.getSelected()) {
             // Limit the drivebase's acceleration to reduce wear on the swerve modules
@@ -86,7 +98,13 @@ public class DriveTeleop extends CommandBase {
      */
     protected double calculateRotationalSpeed (Vector3309 translationalSpeeds)
     {
-        return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -OI.DriverRight.GetXWithDeadband();
+        double x = OI.DriverRight.GetXWithDeadband();
+
+        if (OI.DriverRight.getTrigger())
+        {
+            x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+        }
+        return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -x;
     }
 
     @Override

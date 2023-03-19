@@ -39,7 +39,8 @@ public class DriverCamera implements IVisionCamera {
 
     @Override
     public int camMode() {
-        NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(1);
+        return (int) NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(1);
     }
+
 }
 

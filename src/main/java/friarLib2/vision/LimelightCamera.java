@@ -54,6 +54,6 @@ public class LimelightCamera implements IVisionCamera {
 
     @Override
     public int camMode() {
-        NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(0);
+        return (int) NetworkTableInstance.getDefault().getTable("Limelight").getEntry("pipeline").getNumber(0);
     }
 }

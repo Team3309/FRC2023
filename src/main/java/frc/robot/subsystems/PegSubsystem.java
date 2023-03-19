@@ -20,8 +20,11 @@ public class PegSubsystem extends SubsystemBase
         Solenoid.set(DoubleSolenoid.Value.kReverse);
     }
     
-    public CommandBase Command_Toggle()
+    public CommandBase Command_ExtendWhile()
     {
-        return runOnce(Solenoid::toggle);
+        return startEnd(
+                () -> Solenoid.set(DoubleSolenoid.Value.kForward),
+                () -> Solenoid.set(DoubleSolenoid.Value.kReverse)
+        );
     }
 }

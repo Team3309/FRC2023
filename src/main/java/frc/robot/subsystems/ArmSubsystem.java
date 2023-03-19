@@ -174,7 +174,7 @@ public class ArmSubsystem extends SubsystemBase
             Map.entry(ArmPosition.ScoreTop,
                     new ArmPosePair(
                             new ArmPose(0, 0), //Forward
-                            new ArmPose(-0.461, -0.768)  //Backward
+                            new ArmPose(0, 0)  //Backward
                     ))
     );
     
