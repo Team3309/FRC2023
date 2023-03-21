@@ -184,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
     public CommandBase Command_AutoBalance()
     {
         return Commands.sequence(
-              Command_DriveDistance(1.75, 1.45)
+              Command_DriveDistance(1.5, 1.45)
             , Command_DriveDistance(0.75, 0.2)
             , Command_DriveDistance(0.5, 1.5).raceWith(Command_WaitUntilFalling())
             , Command_DriveDistance(-0.5, 0.4)

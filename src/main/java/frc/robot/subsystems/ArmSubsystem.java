@@ -159,15 +159,15 @@ public class ArmSubsystem extends SubsystemBase
             // -- Score hybrid
             Map.entry(ArmPosition.ScoreHybrid,
                     new ArmPosePair(
-                            new ArmPose(0.147, 0.761), //Forward
+                            new ArmPose(0.173, 0.734), //Forward
                             new ArmPose(0, -0.53)  //Backward
                     )),
 
             // -- Score mid
             Map.entry(ArmPosition.ScoreMid,
                     new ArmPosePair(
-                            new ArmPose(0.351, 0.706), //Forward
-                            new ArmPose(-0.297, -0.407)  //Backward
+                            new ArmPose(0.392, 0.751), //Forward
+                            new ArmPose( -0.280, -0.387)  //Backward OLD VALUES: U = -.297, L = -0.407
                     )),
 
             // -- Score top
@@ -362,6 +362,16 @@ public class ArmSubsystem extends SubsystemBase
     {
         return runOnce(ClampSolenoid::toggle);
     }
+//
+//    public Command Auto_ActuateClamp(DoubleSolenoid.Value)
+//    {
+//        return runOnce(() -> ClampSolenoid.set(DoubleSolenoid.Value.kForward));
+//    }
+
+//    public Command Auto_DeActuateClamp()
+//    {
+//        return runOnce(() -> ClampSolenoid.set(DoubleSolenoid.Value.kReverse));
+//    }
 
     public Command Command_ZeroArm()
     {
