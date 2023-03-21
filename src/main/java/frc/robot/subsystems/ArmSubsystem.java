@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -12,9 +13,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
+import frc.robot.OI;
+import friarLib2.math.FriarMath;
 import friarLib2.utility.PIDParameters;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ArmSubsystem extends SubsystemBase
@@ -49,8 +53,8 @@ public class ArmSubsystem extends SubsystemBase
     
     private static class ArmPose
     {
-        private static final double AB_EncoderCountsPer360 = 120000;
-        private static final double BC_EncoderCountsPer360 = 90000;
+        public static final double AB_EncoderCountsPer360 = 120000;
+        public static final double BC_EncoderCountsPer360 = 90000;
 
         public static double PositionToRadians(double position, Joint joint)
         {
@@ -58,7 +62,7 @@ public class ArmSubsystem extends SubsystemBase
             return position / conversion * 2;
         }
 
-        public static double RadiansToPosition(double radians, Joint joint)
+        public static double PercentToPosition(double radians, Joint joint)
         {
             double conversion = joint == Joint.AB ? AB_EncoderCountsPer360 : BC_EncoderCountsPer360;
             return radians * conversion / 2;
@@ -79,12 +83,12 @@ public class ArmSubsystem extends SubsystemBase
 
         public double UpperArmPosition()
         {
-            return RadiansToPosition(_UpperArm, Joint.AB);
+            return PercentToPosition(_UpperArm, Joint.AB);
         }
 
         public double LowerArmPosition()
         {
-            return RadiansToPosition(_LowerArm, Joint.BC);
+            return PercentToPosition(_LowerArm, Joint.BC);
         }
     }
 
@@ -166,7 +170,7 @@ public class ArmSubsystem extends SubsystemBase
             // -- Score mid
             Map.entry(ArmPosition.ScoreMid,
                     new ArmPosePair(
-                            new ArmPose(0.392, 0.751), //Forward
+                            new ArmPose(0.4357, 0.7235), //Forward
                             new ArmPose( -0.280, -0.387)  //Backward OLD VALUES: U = -.297, L = -0.407
                     )),
 
@@ -193,22 +197,23 @@ public class ArmSubsystem extends SubsystemBase
     
     public ArmSubsystem()
     {
-        // TODO: Update soft limits to use radians!!
         Motor_AB = ConfigureMotor(Constants.Arm.AB_MOTOR_ID,
                 Constants.Arm.JOINT_AB_MOTOR_PID,
-                0.75,
-                ArmPose.RadiansToPosition(0.523, Joint.AB),
-                ArmPose.RadiansToPosition(-0.5, Joint.AB),
-                6000,
-                20000);
+                1.0,
+                ArmPose.PercentToPosition(0.523, Joint.AB),
+                ArmPose.PercentToPosition(-0.5, Joint.AB),
+                5000,
+                20000,
+                4);
 
         Motor_BC = ConfigureMotor(Constants.Arm.BC_MOTOR_ID,
                 Constants.Arm.JOINT_BC_MOTOR_PID,
                 1.0,
-                ArmPose.RadiansToPosition(1, Joint.BC),
-                ArmPose.RadiansToPosition(-1, Joint.BC),
+                ArmPose.PercentToPosition(1, Joint.BC),
+                ArmPose.PercentToPosition(-1, Joint.BC),
                 5000,
-                20000);
+                2500,
+                8);
         
         ClampSolenoid = new DoubleSolenoid(
                 Constants.PCM_TYPE,
@@ -227,7 +232,8 @@ public class ArmSubsystem extends SubsystemBase
             , double softLimitForward
             , double softLimitReverse
             , double acceleration
-            , double cruise)
+            , double cruise
+            , int smoothing)
     {
         WPI_TalonFX motor = new WPI_TalonFX(motorId);
 
@@ -270,7 +276,7 @@ public class ArmSubsystem extends SubsystemBase
         // -- Ramp speeds
         motor.configMotionCruiseVelocity(cruise, Constants.TIMEOUT_MS);
         motor.configMotionAcceleration(acceleration, Constants.TIMEOUT_MS); // unloaded = 10,000
-        motor.configMotionSCurveStrength(8);
+        motor.configMotionSCurveStrength(smoothing);
 
         // -- Zero the sensor once on robot boot up
         motor.setSelectedSensorPosition(0, 0, Constants.TIMEOUT_MS);
@@ -321,6 +327,29 @@ public class ArmSubsystem extends SubsystemBase
         return Poses.get(position).getPose(direction);
     }
 
+    // -- This function is likely going to be gross, we're out of time to do this more cleanly
+    private double CalculateGravityFF(Joint joint)
+    {
+        double maxGravityFF = joint == Joint.AB
+                ? 0.12 // AB
+                : 0.125; // BC
+
+        WPI_TalonFX motor = joint == Joint.AB
+                ? Motor_AB
+                : Motor_BC;
+
+        double ticksPer360 = joint == Joint.AB
+                ? ArmPose.AB_EncoderCountsPer360
+                : ArmPose.BC_EncoderCountsPer360;
+
+        double currentPosition = motor.getSelectedSensorPosition();
+        double ticksPerDegree = ticksPer360 / 360;
+        double degrees = (currentPosition - (ticksPer360 / 4)) / ticksPerDegree;
+        double radians = java.lang.Math.toRadians(degrees);
+        double cosineScalar = java.lang.Math.cos(radians);
+        return maxGravityFF * cosineScalar;
+    }
+
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
@@ -362,16 +391,6 @@ public class ArmSubsystem extends SubsystemBase
     {
         return runOnce(ClampSolenoid::toggle);
     }
-//
-//    public Command Auto_ActuateClamp(DoubleSolenoid.Value)
-//    {
-//        return runOnce(() -> ClampSolenoid.set(DoubleSolenoid.Value.kForward));
-//    }
-
-//    public Command Auto_DeActuateClamp()
-//    {
-//        return runOnce(() -> ClampSolenoid.set(DoubleSolenoid.Value.kReverse));
-//    }
 
     public Command Command_ZeroArm()
     {
@@ -392,6 +411,106 @@ public class ArmSubsystem extends SubsystemBase
                         , ArmPose.PositionToRadians(Motor_BC.getSelectedSensorPosition(), Joint.BC)
                         , Motor_BC.getSelectedSensorPosition())
         ).ignoringDisable(true);
+    }
+
+    public CommandBase Command_TEST_ManualArmPositionControl()
+    {
+        AtomicInteger abPos = new AtomicInteger(0);
+        AtomicInteger bcPos = new AtomicInteger(0);
+        
+        return Commands.sequence(
+            new PrintCommand(String.format("!!! --- MANUAL ARM POSITION CONTROL --- !!!\n\nUse operator left stick to move AB and right stick to move BC\nDisable when finished\n%d %d\n\n", abPos.get(), bcPos.get())),
+            run(() ->
+            {
+                boolean print = false;
+                double seconds = 20;
+                
+                var leftY = OI.Operator.getLeftY();
+                if (leftY != 0)
+                {
+                    print = true;
+                    double rate = ArmPose.AB_EncoderCountsPer360 / seconds / 20;
+                    double newVal = abPos.get() + FriarMath.Remap(leftY, -1, 1, -rate, rate);
+                    abPos.set((int)newVal);
+                }
+    
+                var rightY = OI.Operator.getRightY();
+                if (rightY != 0)
+                {
+                    print = true;
+                    double rate = ArmPose.BC_EncoderCountsPer360 / seconds / 20;
+                    double newVal = bcPos.get() + FriarMath.Remap(rightY, -1, 1, -rate, rate);
+                    bcPos.set((int)newVal);
+                }
+                
+                if (print)
+                {
+                    System.out.printf("AB %.0f (%d)   BC: %.0f (%d)\n"
+                            , ArmPose.PositionToRadians(abPos.get(), Joint.AB)
+                            , abPos.get()
+                            , ArmPose.PositionToRadians(bcPos.get(), Joint.BC)
+                            , bcPos.get());
+                }
+                
+                Motor_AB.set(ControlMode.MotionMagic, abPos.get());
+                Motor_BC.set(ControlMode.MotionMagic, bcPos.get());
+            }));
+    }
+
+    public CommandBase Command_TEST_ManualArmPowerControl(Joint joint)
+    {
+        AtomicInteger power = new AtomicInteger(0);
+        int maxPower = 100000;
+        return Commands.sequence(
+                new PrintCommand("!!! --- MANUAL ARM POWER CONTROL --- !!!\n\nUse operator right stick to control the power of the joint\nDisable when finished\n\n"),
+                run(() ->
+                {
+                    boolean print = false;
+                    double rightY = OI.Operator.getRightY();
+                    if (OI.Operator.getLeftStickButton())
+                    {
+                        print = true;
+                        power.set(0);
+                    }
+                    else if (rightY != 0)
+                    {
+                        print = true;
+                        double rate = 10;
+                        double newVal = power.get() + FriarMath.Remap(-rightY, -1, 1, -rate, rate);
+                        power.set((int)Math.min(newVal, maxPower));
+                    }
+
+                    if (print)
+                    {
+                        System.out.printf("power %f\n", ((double)power.get()) / maxPower);
+                    }
+
+                    var motor = joint == Joint.AB ? Motor_AB: Motor_BC;
+                    double pct = ((double)power.get()) / maxPower;
+                    motor.set(ControlMode.PercentOutput, pct);
+                }));
+    }
+
+    public CommandBase Command_TEST_MOVE_ARM(Joint joint, double pct)
+    {
+        var motor = joint == Joint.AB ? Motor_AB : Motor_BC;
+        return run(() ->
+        {
+            double maxGravityFF = 0.12; // AB
+            //double maxGravityFF = 0.125; // BC
+            double currentPosition = motor.getSelectedSensorPosition();
+            double ticksPer360 = joint == Joint.AB ? ArmPose.AB_EncoderCountsPer360 : ArmPose.BC_EncoderCountsPer360;
+            double ticksPerDegree = ticksPer360 / 360;
+            double degrees = (currentPosition - (ticksPer360 / 4)) / ticksPerDegree;
+            double radians = java.lang.Math.toRadians(degrees);
+            double cosineScalar = java.lang.Math.cos(radians);
+
+            double position = ArmPose.PercentToPosition(pct, joint);
+
+            System.out.printf("pct: %.2f   pos: %.0f   scalar: %.2f\n", pct, position, cosineScalar);
+            motor.set(ControlMode.MotionMagic, position, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
+            //motor.set(ControlMode.Position, position, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
+        });
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
@@ -424,9 +543,11 @@ public class ArmSubsystem extends SubsystemBase
     {
         AtomicReference<ArmPose> DesiredPose = new AtomicReference<>();
         
-        Command Debug = runOnce(() -> System.out.printf("Move Joint\n  AB %.2f -> %.2f\n  BC: %.2f -> %.2f\n"
+        Command Debug = runOnce(() -> System.out.printf("Move Joint\n  [%b] AB: %.2f -> %.2f\n  [%b] BC: %.2f -> %.2f\n"
+                , moveAB
                 , Motor_AB.getSelectedSensorPosition(0)
                 , DesiredPose.get().UpperArmPosition()
+                , moveBC
                 , Motor_BC.getSelectedSensorPosition(0)
                 , DesiredPose.get().LowerArmPosition()
             ));
@@ -437,12 +558,12 @@ public class ArmSubsystem extends SubsystemBase
             {
                 if (moveAB)
                 {
-                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.get().UpperArmPosition());
+                    Motor_AB.set(ControlMode.MotionMagic, DesiredPose.get().UpperArmPosition(), DemandType.ArbitraryFeedForward, CalculateGravityFF(Joint.AB));
                 }
     
                 if (moveBC)
                 {
-                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.get().LowerArmPosition());
+                    Motor_BC.set(ControlMode.MotionMagic, DesiredPose.get().LowerArmPosition(), DemandType.ArbitraryFeedForward, CalculateGravityFF(Joint.BC));
                 }
             })
             .until(() ->
@@ -452,14 +573,19 @@ public class ArmSubsystem extends SubsystemBase
 
                 if (moveAB)
                 {
-                    //System.out.printf("Motor %d at position %f\n", Motor_AB.getDeviceID(), Motor_AB.getActiveTrajectoryPosition());
+                    //System.out.printf("AB %.0f -> %.0f\n", Motor_AB.getActiveTrajectoryPosition(), DesiredPose.get().UpperArmPosition());
                     abAtTarget = Math.abs(Motor_AB.getActiveTrajectoryPosition() - DesiredPose.get().UpperArmPosition()) < Arm.TargetThreshold;
                 }
 
                 if (moveBC)
                 {
-                    //System.out.printf("Motor %d at position %f\n", Motor_BC.getDeviceID(), Motor_BC.getActiveTrajectoryPosition());
+                    //System.out.printf("BC %.0f -> %.0f\n", Motor_BC.getActiveTrajectoryPosition(), DesiredPose.get().LowerArmPosition());
                     bcAtTarget = Math.abs(Motor_BC.getActiveTrajectoryPosition() - DesiredPose.get().LowerArmPosition()) < Arm.TargetThreshold;
+                }
+
+                if (abAtTarget && bcAtTarget)
+                {
+                    System.out.println("At Target");
                 }
 
                 return abAtTarget && bcAtTarget;
