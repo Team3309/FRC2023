@@ -1,27 +1,18 @@
-//package friarLib2.vision;
+package friarLib2.vision;
 
-//import edu.wpi.first.networktables.NetworkTableInstance;
-//
-//public class DriverCamera implements IVisionCamera {
-//
-//    @Override
-//    public boolean hasTargets() {
-//    return NetworkTableInstance.getDefault().getTable("camera").getEntry("pipeline").getDouble(2) == 1;
-//    }
-//
-//    @Override
-//    public VisionTarget[] getTargets() {
-//        return null;
-//    }
-//
-//    @Override
-//    public VisionTarget getBestTarget() {
-//        return getTargets()[0];
-//    }
-//
-//    @Override
-//    public int getPipeline() {
-//        return NetworkTableInstance.getDefault().getTable("camera").getEntry("+")
-//    }
-//
-//}
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.TimedRobot;
+
+/**
+ * Uses the CameraServer class to automatically capture video from a USB webcam and send it to the
+ * FRC dashboard without doing any vision processing. This is the easiest way to get camera images
+ * to the dashboard. Just add this to the robotInit() method in your program.
+ */
+
+public class DriverCamera extends TimedRobot {
+    @Override
+    public void robotInit() {
+        CameraServer.startAutomaticCapture();
+    }
+
+}
