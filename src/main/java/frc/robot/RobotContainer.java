@@ -167,7 +167,7 @@ public class RobotContainer
 
     private Command GetPathPlannerAutoCommand(String name)
     {
-        return AutoBuilder.fullAuto(PathPlanner.loadPathGroup(name, new PathConstraints(4, 3)));
+        return AutoBuilder.fullAuto(PathPlanner.loadPathGroup(name, new PathConstraints(1, .5)));
     }
 
     private void ConfigureAutoCommands()
@@ -183,6 +183,10 @@ public class RobotContainer
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
         AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
         AutoChooser.addOption("SimpleEngage", _Drive.Command_AutoBalance());
+        AutoChooser.addOption("SimplePathBarrierEngage", GetPathPlannerAutoCommand("SimplePathBarrierEngage"));
+        AutoChooser.addOption("SimplePathBarriers", GetPathPlannerAutoCommand("SimplePathBarriers"));
+        AutoChooser.addOption("SimplePathCoopEngage", GetPathPlannerAutoCommand("SimplePathCoopEngage"));
+//        AutoChooser.addOption("ClampTest", _Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
         SmartDashboard.putData(AutoChooser);
     }
 
