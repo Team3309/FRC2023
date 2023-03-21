@@ -160,7 +160,7 @@ public class RobotContainer
         // -- Map Path Planner events to Commands
         HashMap<String, Command> eventMap = new HashMap<>();
 
-        eventMap.put("BalanceForward", _Drive.Command_AutoBalance());
+        eventMap.put("BalanceForward", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Forward));
 
         eventMap.put("Arm_ScoreTop_Forward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
         eventMap.put("Arm_ScoreTop_Backward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
@@ -207,7 +207,7 @@ public class RobotContainer
         AutoChooser.addOption("No Auto", new WaitCommand(0));
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
         AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
-        AutoChooser.addOption("SimpleEngage", _Drive.Command_AutoBalance());
+        AutoChooser.addOption("SimpleEngage", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Forward));
         AutoChooser.addOption("SimplePathBarrierEngage", GetPathPlannerAutoCommand("SimplePathBarrierEngage"));
         AutoChooser.addOption("SimplePathBarriers", GetPathPlannerAutoCommand("SimplePathBarriers"));
         AutoChooser.addOption("SimplePathCoopEngage", GetPathPlannerAutoCommand("SimplePathCoopEngage"));
