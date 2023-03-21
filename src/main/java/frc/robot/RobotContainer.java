@@ -58,6 +58,11 @@ public class RobotContainer
         _Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed).schedule();
     }
 
+    public void ZeroArm()
+    {
+        _Arm.Command_ZeroArm().schedule();;
+    }
+
     private void ConfigureBindings()
     {
         // ----------------------------------------------------------------------------------------
@@ -89,10 +94,21 @@ public class RobotContainer
         boolean armTest = false;
 
         // -- Arm
-        new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
-        new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_SetPosition(armTest ? ArmSubsystem.ArmPosition.Test : ArmSubsystem.ArmPosition.ScoreHybrid));
-        new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        if (!armTest)
+        {
+            new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
+            new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreHybrid));
+            new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+            new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        }
+        else
+        {
+            ArmSubsystem.Joint joint = ArmSubsystem.Joint.AB;
+            new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0));
+            new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.15));
+            new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.25));
+            new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.5));
+        }
 
         new Trigger(OI.Operator::DPad_Up).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone));
         new Trigger(OI.Operator::DPad_Right).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone));
@@ -102,8 +118,6 @@ public class RobotContainer
         new Trigger(OI.Operator::getLeftBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
         new Trigger(OI.Operator::getRightBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
 
-        new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_ManualArmControl());
-        
         // -- Peg
         new Trigger(OI.Operator::LeftTrigger).whileTrue(_Peg.Command_ExtendWhile());
         
@@ -118,6 +132,15 @@ public class RobotContainer
         // -- Utility
         new Trigger(OI.Operator::getRightStickButton).onTrue(_Arm.Command_OutputArmPosition());
         new Trigger(OI.Operator::getLeftStickButton).onTrue(_Arm.Command_ZeroArm());
+
+
+
+
+        // -- MANUAL CONTROL FOR TUNING POSES
+        //new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_ManualArmPositionControl());
+
+        // -- MANUAL MODE FOR TUNING GRAVITY FF
+        //new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_TEST_ManualArmPowerControl(ArmSubsystem.Joint.AB));
     }
 
 
