@@ -12,9 +12,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
+import frc.robot.OI;
+import friarLib2.math.FriarMath;
 import friarLib2.utility.PIDParameters;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ArmSubsystem extends SubsystemBase
@@ -49,8 +52,8 @@ public class ArmSubsystem extends SubsystemBase
     
     private static class ArmPose
     {
-        private static final double AB_EncoderCountsPer360 = 120000;
-        private static final double BC_EncoderCountsPer360 = 90000;
+        public static final double AB_EncoderCountsPer360 = 120000;
+        public static final double BC_EncoderCountsPer360 = 90000;
 
         public static double PositionToRadians(double position, Joint joint)
         {
@@ -394,6 +397,48 @@ public class ArmSubsystem extends SubsystemBase
         ).ignoringDisable(true);
     }
 
+    public CommandBase Command_ManualArmControl()
+    {
+        
+        AtomicInteger abPos = new AtomicInteger();
+        AtomicInteger bcPos = new AtomicInteger();
+        
+        return Commands.sequence(
+            new PrintCommand("!!! --- MANUAL ARM CONTROL --- !!!\n\nUse operator left stick to move AB and right stick to move BC\nPress any pose to cancel"),
+            run(() ->
+            {
+                boolean print = false;
+                double seconds = 4;
+                
+                var leftY = OI.Operator.getLeftY();
+                if (leftY != 0)
+                {
+                    print = true;
+                    double rate = ArmPose.AB_EncoderCountsPer360 / seconds / 20;
+                    double newVal = abPos.get() + FriarMath.Remap(leftY, -1, 1, -rate, rate);
+                    abPos.set((int)newVal);
+                }
+    
+                var rightY = OI.Operator.getRightY();
+                if (rightY != 0)
+                {
+                    print = true;
+                    double rate = ArmPose.BC_EncoderCountsPer360 / seconds / 20;
+                    double newVal = bcPos.get() + FriarMath.Remap(rightY, -1, 1, -rate, rate);
+                    bcPos.set((int)newVal);
+                }
+                
+                if (print)
+                {
+                    System.out.printf("AB %d   BC: %d\n", abPos.get(), bcPos.get());
+                }
+                
+                Motor_AB.set(ControlMode.MotionMagic, abPos.get());
+                Motor_BC.set(ControlMode.MotionMagic, bcPos.get());
+            })
+            .withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf));
+    }
+    
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
     // -------------------------------------------------------------------------------------------------------------------------------------

@@ -102,6 +102,8 @@ public class RobotContainer
         new Trigger(OI.Operator::getLeftBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
         new Trigger(OI.Operator::getRightBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
 
+        new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_ManualArmControl());
+        
         // -- Peg
         new Trigger(OI.Operator::LeftTrigger).whileTrue(_Peg.Command_ExtendWhile());
         
