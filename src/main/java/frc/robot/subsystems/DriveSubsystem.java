@@ -19,8 +19,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static frc.robot.Constants.Drive.*;
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase
+{
 
+    public enum Direction
+    {
+        Forward,
+        Reverse,
+    }
+    
     private final Field2d field = new Field2d();
 
     private final SwerveModule frontLeftModule;
@@ -181,13 +188,15 @@ public class DriveSubsystem extends SubsystemBase {
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Commands
     // -------------------------------------------------------------------------------------------------------------------------------------
-    public CommandBase Command_AutoBalance()
+    public CommandBase Command_AutoBalance(Direction direction)
     {
+        double sign = direction == Direction.Forward ? 1 : -1;
+        
         return Commands.sequence(
-              Command_DriveDistance(1.5, 1.45)
-            , Command_DriveDistance(0.75, 0.2)
-            , Command_DriveDistance(0.5, 1.5).raceWith(Command_WaitUntilFalling())
-            , Command_DriveDistance(-0.5, 0.4)
+              Command_DriveDistance(sign * 1.5, 1.45)
+            , Command_DriveDistance(sign * 0.75, 0.2)
+            , Command_DriveDistance(sign * 0.5, 1.5).raceWith(Command_WaitUntilFalling())
+            , Command_DriveDistance(sign * -0.5, 0.4)
         );
     }
 

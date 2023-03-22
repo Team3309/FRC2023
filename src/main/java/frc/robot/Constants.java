@@ -94,9 +94,12 @@ public final class Constants {
         public static final int BC_MOTOR_ID = 10;
         
         /******** PID Gains ********/
-        public static final PIDParameters JOINT_AB_MOTOR_PID = new PIDParameters(0, "Joint AB Motor PID", 1, 0.008, 10, 0.0, 50);
-        public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.2, 0.01, 2.5, 0.0, 50);
-        
+        //public static final PIDParameters JOINT_AB_MOTOR_PID = new PIDParameters(0, "Joint AB Motor PID", 1, 0.008, 10, 0.0, 50);
+        //public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.2, 0.01, 2.5, 0.0, 50);
+
+        public static final PIDParameters JOINT_AB_MOTOR_PID = new PIDParameters(0, "Joint AB Motor PID", 0.02, 0.0, 0.25, 0.0, 50);
+        public static final PIDParameters JOINT_BC_MOTOR_PID = new PIDParameters(0, "Joint BC Motor PID", 0.03, 0.0, 0.5, 0.0, 50);
+
         /******** Gear Ratios ********/
         public static final double JOINT_AB_MOTOR_GEAR_RATIO = 60;
         public static final double JOINT_BC_MOTOR_GEAR_RATIO = 40;
