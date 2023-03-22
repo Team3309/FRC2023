@@ -58,6 +58,11 @@ public class RobotContainer
         _Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed).schedule();
     }
 
+    public void ZeroArm()
+    {
+        _Arm.Command_ZeroArm().schedule();;
+    }
+
     private void ConfigureBindings()
     {
         // ----------------------------------------------------------------------------------------
@@ -89,10 +94,21 @@ public class RobotContainer
         boolean armTest = false;
 
         // -- Arm
-        new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
-        new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_SetPosition(armTest ? ArmSubsystem.ArmPosition.Test : ArmSubsystem.ArmPosition.ScoreHybrid));
-        new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
-        new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        if (!armTest)
+        {
+            new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.Stowed));
+            new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreHybrid));
+            new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreMid));
+            new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.ScoreTop));
+        }
+        else
+        {
+            ArmSubsystem.Joint joint = ArmSubsystem.Joint.AB;
+            new Trigger(OI.Operator::getAButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0));
+            new Trigger(OI.Operator::getBButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.15));
+            new Trigger(OI.Operator::getXButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.25));
+            new Trigger(OI.Operator::getYButton).onTrue(_Arm.Command_TEST_MOVE_ARM(joint, 0.5));
+        }
 
         new Trigger(OI.Operator::DPad_Up).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone));
         new Trigger(OI.Operator::DPad_Right).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone));
@@ -116,6 +132,15 @@ public class RobotContainer
         // -- Utility
         new Trigger(OI.Operator::getRightStickButton).onTrue(_Arm.Command_OutputArmPosition());
         new Trigger(OI.Operator::getLeftStickButton).onTrue(_Arm.Command_ZeroArm());
+
+
+
+
+        // -- MANUAL CONTROL FOR TUNING POSES
+        //new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_ManualArmPositionControl());
+
+        // -- MANUAL MODE FOR TUNING GRAVITY FF
+        //new Trigger(OI.Operator::getBackButton).and(OI.Operator::getStartButton).onTrue(_Arm.Command_TEST_ManualArmPowerControl(ArmSubsystem.Joint.AB));
     }
 
 
@@ -135,7 +160,7 @@ public class RobotContainer
         // -- Map Path Planner events to Commands
         HashMap<String, Command> eventMap = new HashMap<>();
 
-        eventMap.put("BalanceForward", _Drive.Command_AutoBalance());
+        eventMap.put("BalanceForward", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Forward));
 
         eventMap.put("Arm_ScoreTop_Forward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
         eventMap.put("Arm_ScoreTop_Backward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
@@ -182,7 +207,7 @@ public class RobotContainer
         AutoChooser.addOption("No Auto", new WaitCommand(0));
         AutoChooser.addOption("SimplePathStationSideEngage", GetPathPlannerAutoCommand("SimplePathStationSideEngage"));
         AutoChooser.addOption("SimplePathStationSide", GetPathPlannerAutoCommand("SimplePathStationSide"));
-        AutoChooser.addOption("SimpleEngage", _Drive.Command_AutoBalance());
+        AutoChooser.addOption("SimpleEngage", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Forward));
         AutoChooser.addOption("SimplePathBarrierEngage", GetPathPlannerAutoCommand("SimplePathBarrierEngage"));
         AutoChooser.addOption("SimplePathBarriers", GetPathPlannerAutoCommand("SimplePathBarriers"));
         AutoChooser.addOption("SimplePathCoopEngage", GetPathPlannerAutoCommand("SimplePathCoopEngage"));
