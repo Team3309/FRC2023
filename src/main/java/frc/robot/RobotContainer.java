@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.drive.AutoBalance;
 import frc.robot.commands.drive.DriveTeleop;
 import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
@@ -84,6 +85,8 @@ public class RobotContainer
         new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
 
         //new Trigger(OI.DriverLeft::getTrigger).onTrue(Drive.Command_AutoBalance());
+
+//        new Trigger(OI.DriverLeft::getTrigger). onTrue(new AutoBalance(new DriveSubsystem()));
 
 
 
@@ -171,7 +174,7 @@ public class RobotContainer
         eventMap.put("Arm_ScoreHybrid_Backward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreHybrid, ArmSubsystem.ArmDirection.Backward));
         eventMap.put("Arm_PickupFloor_Backward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.PickupFloorCone, ArmSubsystem.ArmDirection.Backward));
         eventMap.put("Arm_Stow", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.Stowed, ArmSubsystem.ArmDirection.Forward));
-        eventMap.put("Wait", new WaitCommand(0.5));
+        eventMap.put("Wait", new WaitCommand(1));
 
 
         eventMap.put("Clamp_Close", _Arm.Command_ActuateClamp(DoubleSolenoid.Value.kForward));
