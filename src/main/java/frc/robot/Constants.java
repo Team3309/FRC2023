@@ -45,7 +45,7 @@ public final class Constants {
         public static final SwerveCANIDs FRONT_LEFT_MODULE_IDS = new SwerveCANIDs(32, 36, 61);
         public static final SwerveCANIDs FRONT_RIGHT_MODULE_IDS = new SwerveCANIDs(33, 37, 62);
         public static final SwerveCANIDs BACK_LEFT_MODULE_IDS = new SwerveCANIDs(34, 39, 60);
-        public static final SwerveCANIDs BACK_RIGHT_MODULE_IDS = new SwerveCANIDs(35, 38, 59);
+        public static final SwerveCANIDs BACK_RIGHT_MODULE_IDS = new SwerveCANIDs(40, 41, 59);
         
         /********** Module Translations **********/
         public static final Translation2d FRONT_LEFT_MODULE_TRANSLATION = new Translation2d(0.34671, 0.23241);
