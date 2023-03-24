@@ -161,6 +161,7 @@ public class RobotContainer
         HashMap<String, Command> eventMap = new HashMap<>();
 
         eventMap.put("BalanceForward", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Forward));
+        eventMap.put("BalanceBackward", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Reverse));
 
         eventMap.put("Arm_ScoreTop_Forward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Forward));
         eventMap.put("Arm_ScoreTop_Backward", _Arm.Command_SetPositionAndDirection(ArmSubsystem.ArmPosition.ScoreTop, ArmSubsystem.ArmDirection.Backward));
@@ -211,6 +212,7 @@ public class RobotContainer
         AutoChooser.addOption("SimplePathBarrierEngage", GetPathPlannerAutoCommand("SimplePathBarrierEngage"));
         AutoChooser.addOption("SimplePathBarriers", GetPathPlannerAutoCommand("SimplePathBarriers"));
         AutoChooser.addOption("SimplePathCoopEngage", GetPathPlannerAutoCommand("SimplePathCoopEngage"));
+        AutoChooser.addOption("SimpleEngageR", _Drive.Command_AutoBalance(DriveSubsystem.Direction.Reverse));
 //        AutoChooser.addOption("ClampTest", _Arm.Command_ActuateClamp(DoubleSolenoid.Value.kReverse));
         SmartDashboard.putData(AutoChooser);
     }

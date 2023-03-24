@@ -41,7 +41,7 @@ import friarLib2.utility.PIDParameters;
 public class SwerveModule3309 implements SwerveModule {
     /********** Constants **********/
     public static final double WHEEL_DIAMETER_INCHES = 3.8;
-    public static final double DRIVE_GEAR_RATIO = (60. / 20.) * (16. / 34.) * (45. / 15.);
+    public static final double DRIVE_GEAR_RATIO = (60. / 20.) * (18. / 32.) * (45. / 15.);
     public static final double STEERING_GEAR_RATIO_FALCON = (100. / 24.) * (48. / 16.); // Gear ratio between the Falcon's shaft and the steering axis
     public static final double STEERING_GEAR_RATIO_ENCODER = (1. / 1.); // Gear ratio between the CANCoder and the steering axis
     public static final double SLIP_THRESHOLD = 5; // Steering axis will be considered to have slipped if the difference between the Falcon and CANCoder's readings is greater than this value
