@@ -193,10 +193,10 @@ public class DriveSubsystem extends SubsystemBase
         double sign = direction == Direction.Forward ? 1 : -1;
         
         return Commands.sequence(
-              Command_DriveDistance(sign * 1, 1.25) //1.45
+              Command_DriveDistance(sign * 1.5, 1) //1.45
             , Command_DriveDistance(sign * 0.75, 0.2)
-            , Command_DriveDistance(sign * 0.15, 1.5).raceWith(Command_WaitUntilFalling())
-            , Command_DriveDistance(sign * -0.15, 0.03) //new: 0.45, Old: 0.03
+            , Command_DriveDistance(sign * 0.5, 1.5).raceWith(Command_WaitUntilFalling())
+            , Command_DriveDistance(sign * -0.5, 0.4) //new: 0.45, Old: 0.03
         );
     }
 
