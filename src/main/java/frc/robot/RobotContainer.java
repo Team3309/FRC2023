@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.drive.AutoBalance;
 import frc.robot.commands.drive.DriveTeleop;
 import frc.robot.commands.drive.TurnInDirectionOfTarget;
 import frc.robot.subsystems.ArmSubsystem;
