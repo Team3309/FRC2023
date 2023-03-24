@@ -139,8 +139,8 @@ public class ArmSubsystem extends SubsystemBase
             // -- Pick up form floor
             Map.entry(ArmPosition.PickupFloorCone, // Forward is peg
                     new ArmPosePair(
-                            new ArmPose(-0.056, 0.385), //Forward
-                            new ArmPose(0.058, -0.466)  //Backward
+                            new ArmPose(-0.076, 0.300), //Forward
+                            new ArmPose(0.091, -0.472)  //Backward
                     )),
             Map.entry(ArmPosition.PickupFloorCube,
                     new ArmPosePair(
@@ -170,8 +170,8 @@ public class ArmSubsystem extends SubsystemBase
             // -- Score mid
             Map.entry(ArmPosition.ScoreMid,
                     new ArmPosePair(
-                            new ArmPose(0.4357, 0.7235), //Forward
-                            new ArmPose( -0.280, -0.387)  //Backward OLD VALUES: U = -.297, L = -0.407
+                            new ArmPose(0.407, 0.573), //Forward
+                            new ArmPose( -0.330, -0.302)  //Backward OLD VALUES: U = -.297, L = -0.407
                     )),
 
             // -- Score top
