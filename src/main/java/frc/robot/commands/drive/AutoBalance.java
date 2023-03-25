@@ -36,7 +36,7 @@ public class AutoBalance extends CommandBase
     @Override
     public void execute()
     {
-        int samples = 15; //Smaller means average moves faster
+        int samples = 3; //Smaller means average moves faster
         double error = GetError();
         errorUntilFlat = (errorUntilFlat * (samples - 1) + error) / samples;
         robotSpeed = -Math.min(Constants.Drive.CHARGE_STATION_DRIVE_KP * errorUntilFlat, 0.25);
@@ -58,7 +58,6 @@ public class AutoBalance extends CommandBase
     @Override
     public void end(boolean interrupted)
     {
-        drive.Command_DriveDistance(-0.5, 0.03).schedule();
         drive.stopChassis();
     }
 
