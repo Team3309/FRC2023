@@ -41,6 +41,8 @@ public class DriveTeleop extends CommandBase {
     private static final SlewRateLimiter xAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
     private static final SlewRateLimiter yAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
 
+    private boolean SlowMo = false;
+
     /** Menu on the dashboard to toggle acceleration limits */
     static SendableChooser<Boolean> accelChooser = new SendableChooser<>();
     static {
@@ -64,7 +66,13 @@ public class DriveTeleop extends CommandBase {
         double x = OI.DriverLeft.GetXWithDeadband();
         double y = OI.DriverLeft.GetYWithDeadband();
 
-        if (OI.DriverRight.getTrigger())
+        // if (OI.DriverRight.getTrigger())
+        // {
+        //     x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+        //     y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
+        // }
+
+        if (SlowMo)
         {
             x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
             y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
@@ -73,6 +81,11 @@ public class DriveTeleop extends CommandBase {
         Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(-x, -y)
                 .capMagnitude(1)
                 .scale(Constants.Drive.MAX_TELEOP_SPEED);
+
+        if (SlowMo)
+        {
+            translationalSpeeds = translationalSpeeds.scale(0.2);
+        }
 
         if (accelChooser.getSelected()) {
             // Limit the drivebase's acceleration to reduce wear on the swerve modules
@@ -87,7 +100,14 @@ public class DriveTeleop extends CommandBase {
             IMU.getRobotYaw());
 
         drive.setChassisSpeeds(speeds);
+
+        if (OI.DriverRight.getTrigger())
+        {
+            SlowMo = !SlowMo;
+        }
+    
     }
+
 
     /**
      * Given the field-relative translational speeds requested by the
@@ -100,7 +120,11 @@ public class DriveTeleop extends CommandBase {
     {
         double x = OI.DriverRight.GetXWithDeadband();
 
-        if (OI.DriverRight.getTrigger())
+        // if (OI.DriverRight.getTrigger())
+        // {
+        //     x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+        // }
+        if (SlowMo)
         {
             x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
         }
