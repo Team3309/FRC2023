@@ -31,7 +31,7 @@ import friarLib2.utility.Vector3309;
  */
 public class DriveTeleop extends CommandBase {
 
-    private static final double OutputRange = 0.2;
+    private static final double OutputRange = 0.8;
 
     protected DriveSubsystem drive;
 
@@ -63,6 +63,8 @@ public class DriveTeleop extends CommandBase {
 
     @Override
     public void execute() {
+        SmartDashboard.putBoolean("Is Slowmode", SlowMo);
+
         double x = OI.DriverLeft.GetXWithDeadband();
         double y = OI.DriverLeft.GetYWithDeadband();
 
@@ -74,8 +76,8 @@ public class DriveTeleop extends CommandBase {
 
         if (SlowMo)
         {
-            x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
-            y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
+            x = FriarMath.Remap(x, -0.5, 0.5, -OutputRange, OutputRange);
+            y = FriarMath.Remap(y, -0.5, 0.5, -OutputRange, OutputRange);
         }
 
         Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(-x, -y)
@@ -105,7 +107,7 @@ public class DriveTeleop extends CommandBase {
         {
             SlowMo = !SlowMo;
         }
-    
+
     }
 
 
@@ -126,7 +128,7 @@ public class DriveTeleop extends CommandBase {
         // }
         if (SlowMo)
         {
-            x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+            x = FriarMath.Remap(x, -0.5, 0.5, -OutputRange, OutputRange);
         }
         return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -x;
     }
