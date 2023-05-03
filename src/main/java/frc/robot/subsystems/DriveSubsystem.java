@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.IMU;
+import frc.robot.OI;
 import frc.robot.Swerve.SwerveModule3309;
 import friarLib2.hardware.SwerveModule;
 
@@ -38,6 +39,13 @@ public class DriveSubsystem extends SubsystemBase
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDriveKinematics swerveKinematics;
     private Pose2d currentRobotPose = new Pose2d();
+
+    private boolean SlowMo = false;
+
+    public boolean getSlowMo()
+    {
+        return SlowMo;
+    }
 
     /**
      * Initialize the swerve modules, imu, and Kinematics/Odometry objects
@@ -196,7 +204,7 @@ public class DriveSubsystem extends SubsystemBase
               Command_DriveDistance(sign * 1, 1.25) //1.45
             , Command_DriveDistance(sign * 0.75, 0.2)
             , Command_DriveDistance(sign * 0.15, 1.5).raceWith(Command_WaitUntilFalling())
-            , Command_DriveDistance(sign * -0.15, 0.03) //new: 0.45, Old: 0.03
+            , Command_DriveDistance(sign * -0.15, 0.03) //YAHHHHHHHHHH
         );
     }
 
@@ -223,10 +231,10 @@ public class DriveSubsystem extends SubsystemBase
         );
     }
 
-//    public Command Command_Stationwheels()
-//    {
-//        runOnce(() ->)
-//    }
+    public CommandBase Command_Slowmo()
+    {
+        return runOnce(() -> SlowMo = !SlowMo);
+    }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands

@@ -32,6 +32,9 @@ import friarLib2.utility.Vector3309;
 public class DriveTeleop extends CommandBase {
 
     private static final double OutputRange = 0.8;
+    private static final double RotateOutputRange = 0.2;
+
+    private boolean SafeMode;
 
     protected DriveSubsystem drive;
 
@@ -40,8 +43,6 @@ public class DriveTeleop extends CommandBase {
 
     private static final SlewRateLimiter xAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
     private static final SlewRateLimiter yAccelLimiter = new SlewRateLimiter(Constants.Drive.MAX_TELEOP_ACCELERATION);
-
-    private boolean SlowMo = false;
 
     /** Menu on the dashboard to toggle acceleration limits */
     static SendableChooser<Boolean> accelChooser = new SendableChooser<>();
@@ -63,7 +64,8 @@ public class DriveTeleop extends CommandBase {
 
     @Override
     public void execute() {
-        SmartDashboard.putBoolean("Is Slowmode", SlowMo);
+        SmartDashboard.putBoolean("Is Slowmode", SafeMode);
+        SafeMode = drive.getSlowMo();
 
         double x = OI.DriverLeft.GetXWithDeadband();
         double y = OI.DriverLeft.GetYWithDeadband();
@@ -74,7 +76,7 @@ public class DriveTeleop extends CommandBase {
         //     y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
         // }
 
-        if (SlowMo)
+        if (SafeMode)
         {
             x = FriarMath.Remap(x, -0.5, 0.5, -OutputRange, OutputRange);
             y = FriarMath.Remap(y, -0.5, 0.5, -OutputRange, OutputRange);
@@ -84,7 +86,7 @@ public class DriveTeleop extends CommandBase {
                 .capMagnitude(1)
                 .scale(Constants.Drive.MAX_TELEOP_SPEED);
 
-        if (SlowMo)
+        if (SafeMode)
         {
             translationalSpeeds = translationalSpeeds.scale(0.2);
         }
@@ -103,10 +105,10 @@ public class DriveTeleop extends CommandBase {
 
         drive.setChassisSpeeds(speeds);
 
-        if (OI.DriverRight.getTrigger())
-        {
-            SlowMo = !SlowMo;
-        }
+//        if (OI.DriverRight.getTrigger())
+//        {
+//            SlowMo = !SlowMo;
+//        }
 
     }
 
@@ -126,9 +128,9 @@ public class DriveTeleop extends CommandBase {
         // {
         //     x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
         // }
-        if (SlowMo)
+        if (SafeMode)
         {
-            x = FriarMath.Remap(x, -0.5, 0.5, -OutputRange, OutputRange);
+            x = FriarMath.Remap(x, -0.5, 0.5, -RotateOutputRange, RotateOutputRange);
         }
         return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -x;
     }

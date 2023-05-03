@@ -81,7 +81,7 @@ public class RobotContainer
         new Trigger(OI.DriverLeft::getTrigger).whileTrue(new TurnInDirectionOfTarget(_Drive));
 
         //Zero IMU
-        new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
+//        new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
 
         //new Trigger(OI.DriverLeft::getTrigger).onTrue(Drive.Command_AutoBalance());
 
@@ -114,8 +114,8 @@ public class RobotContainer
 
         new Trigger(OI.Operator::DPad_Up).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCone));
         new Trigger(OI.Operator::DPad_Right).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCone));
-        new Trigger(OI.Operator::DPad_Down).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCube));
-        new Trigger(OI.Operator::DPad_Left).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCube));
+//        new Trigger(OI.Operator::DPad_Down).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupFloorCube));
+//        new Trigger(OI.Operator::DPad_Left).onTrue(_Arm.Command_SetPosition(ArmSubsystem.ArmPosition.PickupSubstationCube));
 
         new Trigger(OI.Operator::getLeftBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Backward));
         new Trigger(OI.Operator::getRightBumper).onTrue(_Arm.Command_SetDirection(ArmSubsystem.ArmDirection.Forward));
@@ -135,7 +135,9 @@ public class RobotContainer
         new Trigger(OI.Operator::getRightStickButton).onTrue(_Arm.Command_OutputArmPosition());
         new Trigger(OI.Operator::getLeftStickButton).onTrue(_Arm.Command_ZeroArm());
 
-
+        //SafeMode
+        new Trigger(OI.Operator::DPad_Down).onTrue(_Drive.Command_Slowmo());
+        new Trigger(OI.Operator::DPad_Left).onTrue(new InstantCommand(IMU::zeroIMU));
 
 
         // -- MANUAL CONTROL FOR TUNING POSES
