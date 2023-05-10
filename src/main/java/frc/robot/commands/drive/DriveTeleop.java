@@ -31,10 +31,7 @@ import friarLib2.utility.Vector3309;
  */
 public class DriveTeleop extends CommandBase {
 
-    private static final double OutputRange = 0.8;
-    private static final double RotateOutputRange = 0.2;
-
-    private boolean SafeMode;
+    private static final double OutputRange = 0.2;
 
     protected DriveSubsystem drive;
 
@@ -64,32 +61,19 @@ public class DriveTeleop extends CommandBase {
 
     @Override
     public void execute() {
-        SmartDashboard.putBoolean("Is Slowmode", SafeMode);
-        SafeMode = drive.getSlowMo();
 
         double x = OI.DriverLeft.GetXWithDeadband();
         double y = OI.DriverLeft.GetYWithDeadband();
 
-        // if (OI.DriverRight.getTrigger())
-        // {
-        //     x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
-        //     y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
-        // }
-
-        if (SafeMode)
-        {
-            x = FriarMath.Remap(x, -0.5, 0.5, -OutputRange, OutputRange);
-            y = FriarMath.Remap(y, -0.5, 0.5, -OutputRange, OutputRange);
-        }
+         if (OI.DriverRight.getTrigger())
+         {
+             x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+             y = FriarMath.Remap(y, -1, 1, -OutputRange, OutputRange);
+         }
 
         Vector3309 translationalSpeeds = Vector3309.fromCartesianCoords(-x, -y)
                 .capMagnitude(1)
                 .scale(Constants.Drive.MAX_TELEOP_SPEED);
-
-        if (SafeMode)
-        {
-            translationalSpeeds = translationalSpeeds.scale(0.2);
-        }
 
         if (accelChooser.getSelected()) {
             // Limit the drivebase's acceleration to reduce wear on the swerve modules
@@ -105,11 +89,6 @@ public class DriveTeleop extends CommandBase {
 
         drive.setChassisSpeeds(speeds);
 
-//        if (OI.DriverRight.getTrigger())
-//        {
-//            SlowMo = !SlowMo;
-//        }
-
     }
 
 
@@ -124,14 +103,11 @@ public class DriveTeleop extends CommandBase {
     {
         double x = OI.DriverRight.GetXWithDeadband();
 
-        // if (OI.DriverRight.getTrigger())
-        // {
-        //     x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
-        // }
-        if (SafeMode)
-        {
-            x = FriarMath.Remap(x, -0.5, 0.5, -RotateOutputRange, RotateOutputRange);
-        }
+         if (OI.DriverRight.getTrigger())
+         {
+             x = FriarMath.Remap(x, -1, 1, -OutputRange, OutputRange);
+         }
+
         return Constants.Drive.MAX_TELEOP_ROTATIONAL_SPEED * -x;
     }
 
