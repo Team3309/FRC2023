@@ -136,8 +136,8 @@ public class RobotContainer
         new Trigger(OI.Operator::getLeftStickButton).onTrue(_Arm.Command_ZeroArm());
 
         //SafeMode
-        new Trigger(OI.Operator::DPad_Down).onTrue(_Drive.Command_Slowmo());
-        new Trigger(OI.Operator::DPad_Left).onTrue(new InstantCommand(IMU::zeroIMU));
+//        new Trigger(OI.Operator::DPad_Down).onTrue(_Drive.Command_Slowmo());
+//        new Trigger(OI.Operator::DPad_Left).onTrue(new InstantCommand(IMU::zeroIMU));
 
 
         // -- MANUAL CONTROL FOR TUNING POSES

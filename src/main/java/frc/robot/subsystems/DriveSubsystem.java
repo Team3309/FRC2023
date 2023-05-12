@@ -40,7 +40,7 @@ public class DriveSubsystem extends SubsystemBase
     private final SwerveDriveKinematics swerveKinematics;
     private Pose2d currentRobotPose = new Pose2d();
 
-    private boolean SlowMo = false;
+    private boolean SlowMo = true;
 
     public boolean getSlowMo()
     {
@@ -231,10 +231,10 @@ public class DriveSubsystem extends SubsystemBase
         );
     }
 
-    public CommandBase Command_Slowmo()
-    {
-        return runOnce(() -> SlowMo = !SlowMo);
-    }
+//    public CommandBase Command_Slowmo()
+//    {
+//        return runOnce(() -> SlowMo = !SlowMo);
+//    }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
