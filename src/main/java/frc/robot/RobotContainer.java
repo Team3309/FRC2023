@@ -75,13 +75,12 @@ public class RobotContainer
         //new Trigger(OI.DriverRight::getTop).onTrue(Arm.ActuateClampCommand(DoubleSolenoid.Value.kReverse));
         //new Trigger(OI.DriverRight::getTrigger).onTrue(Arm.ToggleClampCommand());
 
-        // Driver Right reserved for slow speed control
 
         // -- Auto Turn
         new Trigger(OI.DriverLeft::getTrigger).whileTrue(new TurnInDirectionOfTarget(_Drive));
 
-        //Zero IMU
-//        new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
+        // Zero IMU
+       new Trigger(OI.DriverLeft::getTop).onTrue(new InstantCommand(IMU::zeroIMU));
 
         //new Trigger(OI.DriverLeft::getTrigger).onTrue(Drive.Command_AutoBalance());
 
@@ -134,10 +133,6 @@ public class RobotContainer
         // -- Utility
         new Trigger(OI.Operator::getRightStickButton).onTrue(_Arm.Command_OutputArmPosition());
         new Trigger(OI.Operator::getLeftStickButton).onTrue(_Arm.Command_ZeroArm());
-
-        //SafeMode
-        new Trigger(OI.Operator::DPad_Down).onTrue(_Drive.Command_Slowmo());
-        new Trigger(OI.Operator::DPad_Left).onTrue(new InstantCommand(IMU::zeroIMU));
 
 
         // -- MANUAL CONTROL FOR TUNING POSES

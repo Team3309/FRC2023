@@ -40,12 +40,7 @@ public class DriveSubsystem extends SubsystemBase
     private final SwerveDriveKinematics swerveKinematics;
     private Pose2d currentRobotPose = new Pose2d();
 
-    private boolean SlowMo = false;
 
-    public boolean getSlowMo()
-    {
-        return SlowMo;
-    }
 
     /**
      * Initialize the swerve modules, imu, and Kinematics/Odometry objects
@@ -229,11 +224,6 @@ public class DriveSubsystem extends SubsystemBase
                             return currentRobotPose.getX() < startingPose.get().getX() - distanceInMeters;
                         })
         );
-    }
-
-    public CommandBase Command_Slowmo()
-    {
-        return runOnce(() -> SlowMo = !SlowMo);
     }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
