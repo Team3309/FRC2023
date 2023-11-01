@@ -84,11 +84,11 @@ public class SwerveModule3309 implements SwerveModule {
      * @param encoderID CAN ID for the module's CANCoder
      * @param name The module's name (used when outputting to SmartDashboard)
      */
-    public SwerveModule3309 (double steeringOffset, int driveMotorID, int steeringMotorID, int encoderID, String name)
-    {
+    public SwerveModule3309 (double steeringOffset, int driveMotorID, int steeringMotorID, int encoderID, String name) {
         this.name = name;
-
-        ConfigMotors(driveMotorID, steeringMotorID);
+        driveMotor = new WPI_TalonFX(driveMotorID);
+        steeringMotor = new WPI_TalonFX(steeringMotorID);
+        configMotors();
 
         this.steeringOffset = steeringOffset;
 
@@ -112,79 +112,24 @@ public class SwerveModule3309 implements SwerveModule {
      * @param IDs The collection of CAN ID's for the module
      * @param name The module's name (used when outputting to SmartDashboard)
      */
-    public SwerveModule3309 (double steeringOffset, SwerveCANIDs IDs, String name)
-    {
+    public SwerveModule3309 (double steeringOffset, SwerveCANIDs IDs, String name) {
         this(steeringOffset, IDs.driveMotorID, IDs.steeringMotorID, IDs.CANCoderID, name);
     }
 
     /**
      * Sets the motor PID values to those which will make the robot move the way we want.
      */
-    public void ConfigMotors(int driveMotorID, int steeringMotorID) {
-        driveMotor = ConfigureMotor(driveMotorID,
-                DRIVE_PID_GAINS,
-                1,
-                10000,
-                10000);
+    public void configMotors () {
+        driveMotor.configFactoryDefault();
+        DRIVE_PID_GAINS.configureMotorPID(driveMotor);
+        driveMotor.config_IntegralZone(0, 500);
+        driveMotor.setNeutralMode(NeutralMode.Brake);
         driveMotor.configSupplyCurrentLimit(DRIVE_MOTOR_CURRENT_LIMIT);
 
-        steeringMotor = ConfigureMotor(steeringMotorID,
-                STEERING_PID_GAINS,
-                1,
-                10000,
-                10000);
-    }
-
-    private WPI_TalonFX ConfigureMotor(
-              int motorId
-            , PIDParameters pidConstants
-            , double peakOutput
-            , double acceleration
-            , double cruise)
-    {
-        WPI_TalonFX motor = new WPI_TalonFX(motorId);
-
-        // --Factory default hardware to prevent unexpected behavior
-        motor.configFactoryDefault();
-
-        // -- Configure Sensor Source for Pirmary PID
-        motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TIMEOUT_MS);
-
-        // -- set deadband to super small 0.001 (0.1 %).
-        //    The default deadband is 0.04 (4 %)
-        motor.configNeutralDeadband(0.001, Constants.TIMEOUT_MS);
-        motor.setNeutralMode(NeutralMode.Brake);
-
-        //motor.setSensorPhase(false);
-        //motor.setInverted(true);
-
-        // -- Set relevant frame periods to be at least as fast as periodic rate
-        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, Constants.TIMEOUT_MS);
-        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, Constants.TIMEOUT_MS);
-
-        // -- Set the peak and nominal outputs
-        motor.configNominalOutputForward(0, Constants.TIMEOUT_MS);
-        motor.configNominalOutputReverse(0, Constants.TIMEOUT_MS);
-        motor.configPeakOutputForward(peakOutput, Constants.TIMEOUT_MS);
-        motor.configPeakOutputReverse(-peakOutput, Constants.TIMEOUT_MS);
-
-        // -- Motion Magic
-        motor.selectProfileSlot(pidConstants.GetSlotIndex(), 0);
-        motor.config_kP(pidConstants.GetSlotIndex(), pidConstants.GetP(), Constants.TIMEOUT_MS);
-        motor.config_kI(pidConstants.GetSlotIndex(), pidConstants.GetI(), Constants.TIMEOUT_MS);
-        motor.config_kD(pidConstants.GetSlotIndex(), pidConstants.GetD(), Constants.TIMEOUT_MS);
-        motor.config_kF(pidConstants.GetSlotIndex(), pidConstants.GetF(), Constants.TIMEOUT_MS);
-        motor.config_IntegralZone(pidConstants.GetSlotIndex(), pidConstants.GetIZone(), Constants.TIMEOUT_MS);
-
-        // -- Ramp speeds
-        motor.configMotionCruiseVelocity(cruise, Constants.TIMEOUT_MS);
-        motor.configMotionAcceleration(acceleration, Constants.TIMEOUT_MS);
-        motor.configMotionSCurveStrength(4);
-
-        // -- Zero the sensor once on robot boot up
-        motor.setSelectedSensorPosition(0, 0, Constants.TIMEOUT_MS);
-
-        return motor;
+        steeringMotor.configFactoryDefault();
+        STEERING_PID_GAINS.configureMotorPID(steeringMotor);
+        steeringMotor.config_IntegralZone(0, 500);
+        steeringMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     /**
@@ -218,7 +163,7 @@ public class SwerveModule3309 implements SwerveModule {
 
     public SwerveModulePosition getPosition () {
         return new SwerveModulePosition(
-            Conversions.encoderTicksToMeters(driveMotor.getSelectedSensorPosition()), 
+            Conversions.encoderTicksPer100msToMps(driveMotor.getSelectedSensorPosition()), 
             Rotation2d.fromDegrees(getSteeringDegreesFromFalcon())
         );
     }
@@ -231,6 +176,7 @@ public class SwerveModule3309 implements SwerveModule {
     public void zeroPosition () {
         driveMotor.setSelectedSensorPosition(0);
     }
+
 
     /**
      * @return If the belts for the steering axis have slipped
@@ -295,6 +241,7 @@ public class SwerveModule3309 implements SwerveModule {
         return Conversions.encoderTicksToDegreesCANCoder(steeringEncoder.getPosition());
     }
 
+
     @Override
     public void outputToDashboard () {
         SmartDashboard.putNumber(name + " CANCoder absolute value", steeringEncoder.getAbsolutePosition());
@@ -302,7 +249,6 @@ public class SwerveModule3309 implements SwerveModule {
         SmartDashboard.putNumber(name + " CANCoder degrees", getSteeringDegreesFromEncoder());
         SmartDashboard.putNumber(name + " Falcon degrees", getSteeringDegreesFromFalcon());
         SmartDashboard.putNumber(name + " Falcon raw value", steeringMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber(name + " Position", getPosition().distanceMeters);
         SmartDashboard.putBoolean(name + " has slipped", steeringHasSlipped());
     }
 
@@ -317,15 +263,6 @@ public class SwerveModule3309 implements SwerveModule {
 
         public static double encoderTicksPer100msToMps (double encoderTicksPer100ms) {
             return encoderTicksPer100ms / mpsToEncoderTicksPer100ms(1);
-        }
-
-        public static double metersToEncoderTicks (double meters) {
-            double wheelDiameterMeters = Units.inchesToMeters(WHEEL_DIAMETER_INCHES);
-            return meters * (1.0/(wheelDiameterMeters * Math.PI)) * DRIVE_GEAR_RATIO * (2048.0/1.0);
-        }
-
-        public static double encoderTicksToMeters (double encoderTicks) {
-            return encoderTicks / metersToEncoderTicks(1);
         }
 
         public static double degreesToEncoderTicksFalcon (double degrees) {
@@ -344,4 +281,8 @@ public class SwerveModule3309 implements SwerveModule {
             return encoderTicks / degreesToEncoderTicksCANCoder(1);
         }
     }
+
+    
+
+
 }
