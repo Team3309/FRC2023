@@ -16,6 +16,7 @@ import frc.robot.Constants.Arm;
 import frc.robot.OI;
 import friarLib2.math.FriarMath;
 import friarLib2.utility.PIDParameters;
+import friarLib2.vision.ClassifierCamera;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -512,6 +513,21 @@ public class ArmSubsystem extends SubsystemBase
             //motor.set(ControlMode.Position, position, DemandType.ArbitraryFeedForward, maxGravityFF * cosineScalar);
         });
     }
+
+   public Command Command_testClassy()
+   {
+    return runOnce(() ->
+    {
+        if (ClassifierCamera.ClassifierClass().equals("1 No Aidan"))
+        {
+            ClampSolenoid.set(DoubleSolenoid.Value.kForward);
+        }
+        else if (ClassifierCamera.ClassifierClass().equals("0 Aidan"))
+        {
+            ClampSolenoid.set(DoubleSolenoid.Value.kReverse);
+        }
+   });
+   }
 
     // -------------------------------------------------------------------------------------------------------------------------------------
     // -- Internal Commands
